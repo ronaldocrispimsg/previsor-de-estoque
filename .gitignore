@@ -1,0 +1,40 @@
+# Governança e histórico do agente (100% privado)
+.agents/
+
+# Variáveis de ambiente e credenciais
+.env
+.env.local
+*.env
+
+# Python e caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Bancos de dados locais e volumes
+*.sqlite3
+*.db
+postgres_data/
+
+# Modelos binários pesados de ML e datasets temporários
+*.pkl
+*.joblib
+*.h5
+
+# Logs e arquivos de sistema
+*.log
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+
