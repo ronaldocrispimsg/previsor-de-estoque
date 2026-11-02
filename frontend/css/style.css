@@ -1,22 +1,20 @@
-/* frontend/css/style.css - Predikta Data Solutions */
+/* frontend/css/style.css - Previsor de Estoque */
 
 :root {
-  --primary: #059669;
-  --primary-hover: #047857;
-  --primary-light: #ecfdf5;
+  --primary: #0f766e;
+  --primary-hover: #115e59;
+  --primary-light: #f0fdfa;
   --dark-bg: #0f172a;
   --card-bg: #ffffff;
   --border-color: #e2e8f0;
-  --text-main: #1e293b;
+  --text-main: #0f172a;
   --text-muted: #64748b;
-  --danger: #ef4444;
+  --danger: #b91c1c;
   --danger-light: #fef2f2;
-  --warning: #f59e0b;
+  --warning: #b45309;
   --warning-light: #fffbeb;
-  --success: #10b981;
+  --success: #047857;
   --success-light: #f0fdf4;
-  --purple: #8b5cf6;
-  --purple-light: #f5f3ff;
 }
 
 * {
@@ -32,23 +30,23 @@ body {
   min-height: 100vh;
 }
 
-/* Scrollbar estilizada */
+/* Scrollbar sutil */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-/* Transições suaves */
+/* Abas */
 .tab-content {
   display: none;
-  animation: fadeIn 0.25s ease-in-out forwards;
+  animation: fadeIn 0.2s ease-in-out forwards;
 }
 
 .tab-content.active {
@@ -56,74 +54,61 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-slide-up {
-  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Badges de Status de Estoque */
+/* Badges Sóbrios e Corporativos */
 .badge-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 9999px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
 .badge-ruptura {
-  background-color: var(--danger-light);
-  color: var(--danger);
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
 .badge-atencao {
-  background-color: var(--warning-light);
-  color: var(--warning);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
 }
 
 .badge-excesso {
-  background-color: var(--purple-light);
-  color: var(--purple);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background-color: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
 }
 
 .badge-equilibrado {
-  background-color: var(--success-light);
-  color: var(--success);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
-/* Botões Customizados */
-.btn-primary {
-  background-color: var(--primary);
-  color: #ffffff;
-  transition: all 0.2s ease;
-}
-.btn-primary:hover {
-  background-color: var(--primary-hover);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
-}
-
-/* Efeito cards */
+/* Cards métricos */
 .metric-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 .metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  border-color: #94a3b8;
 }
 
 /* Modais */
@@ -131,8 +116,8 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
   z-index: 50;
   align-items: center;
   justify-content: center;
