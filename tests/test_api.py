@@ -1,6 +1,6 @@
 """
 tests/test_api.py
-Validação dos endpoints da API RESTful do Predikta Data Solutions.
+Validação dos endpoints da API RESTful do Previsor de Estoque.
 """
 
 import io
@@ -14,13 +14,14 @@ def test_healthcheck(client):
 
 def test_login_demo(client):
     res = client.post("/api/auth/login", json={
-        "email": "gestor@supermercado.com",
-        "senha": "admin123"
+        "email": "admin@admin.com",
+        "senha": "admin"
     })
     assert res.status_code == 200
     dados = res.json()
     assert "token" in dados
-    assert dados["email"] == "gestor@supermercado.com"
+    assert dados["email"] == "admin@admin.com"
+    assert dados["nome"] == "admin"
 
 
 def test_listar_produtos(client):
