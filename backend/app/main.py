@@ -1,6 +1,6 @@
 """
 backend/app/main.py
-Ponto de entrada principal da aplicação Predikta Data Solutions.
+Ponto de entrada principal da aplicação Previsor de Estoque.
 """
 
 from contextlib import asynccontextmanager
@@ -12,9 +12,9 @@ from fastapi.staticfiles import StaticFiles
 
 from backend.app.config import PROJECT_DESCRIPTION, PROJECT_NAME
 from backend.app.database import Base, SessionLocal, engine
-from backend.app.models import *  # Carrega todas as tabelas
+from backend.app.models import *
 from backend.app.routes import alertas, auth, dashboard, previsoes, produtos, sazonalidade, seed, vendas
-from backend.app.services.seeder import popular_dados_iniciais
+from backend.app.services.seeder import garantir_usuario_admin
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -25,10 +25,10 @@ async def lifespan(app: FastAPI):
     # Cria todas as tabelas no banco de dados se não existirem
     Base.metadata.create_all(bind=engine)
 
-    # Popula dados iniciais de demonstração se o banco estiver vazio
+    # Garante apenas que o usuário padrão 'admin' exista no banco
     db = SessionLocal()
     try:
-        popular_dados_iniciais(db, force=False)
+        garantir_usuario_admin(db)
     finally:
         db.close()
 
@@ -42,7 +42,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configuração de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

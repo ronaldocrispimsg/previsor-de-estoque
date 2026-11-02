@@ -1,6 +1,6 @@
 """
 backend/app/services/seeder.py
-Gerador de dados realistas de supermercado para demonstração e testes do Predikta Data Solutions.
+Gerador de dados para demonstração e inicialização do Previsor de Estoque.
 """
 
 import hashlib
@@ -14,6 +14,28 @@ from backend.app.models.venda import Venda
 
 def hash_senha(senha: str) -> str:
     return hashlib.sha256(senha.encode("utf-8")).hexdigest()
+
+
+def garantir_usuario_admin(db: Session):
+    """
+    Garante que o usuário padrão 'admin' exista no banco de dados.
+    Nome: admin
+    Email: admin@admin.com
+    Senha: admin
+    """
+    admin = db.query(Usuario).filter(Usuario.email == "admin@admin.com").first()
+    if not admin:
+        admin = Usuario(
+            nome="admin",
+            email="admin@admin.com",
+            senha_hash=hash_senha("admin"),
+            cargo="Administrador / Gestor de Estoque",
+            criado_em=datetime.now(timezone.utc)
+        )
+        db.add(admin)
+        db.commit()
+        db.refresh(admin)
+    return admin
 
 
 PRODUTOS_SEMENTES = [
@@ -46,7 +68,7 @@ PRODUTOS_SEMENTES = [
 
 def popular_dados_iniciais(db: Session, force: bool = False):
     """
-    Popula o banco com catálogo de produtos, usuário gestor e histórico de vendas.
+    Popula o banco com catálogo de produtos, usuário admin e histórico de vendas sob demanda.
     """
     total_produtos = db.query(Produto).count()
     if total_produtos > 0 and not force:
@@ -59,16 +81,8 @@ def popular_dados_iniciais(db: Session, force: bool = False):
         db.query(Usuario).delete()
         db.commit()
 
-    # Cria Usuário Gestor padrão
-    gestor = Usuario(
-        nome="Gestor Supermercado",
-        email="gestor@supermercado.com",
-        senha_hash=hash_senha("admin123"),
-        cargo="Gerente de Suprimentos & Estoque",
-        criado_em=datetime.now(timezone.utc)
-    )
-    db.add(gestor)
-    db.flush()
+    # Cria ou garante Usuário Admin padrão
+    admin = garantir_usuario_admin(db)
 
     # Cria Produtos
     produtos_persistidos = []
@@ -101,12 +115,10 @@ def popular_dados_iniciais(db: Session, force: bool = False):
         for dias_atras in range(180, 0, -1):
             data_venda = hoje - timedelta(days=dias_atras)
             mes = data_venda.month
-            dia_semana = data_venda.weekday()  # 5=Sábado, 6=Domingo
+            dia_semana = data_venda.weekday()
 
-            # Variação natural do fim de semana (+30% a +60%)
             multiplicador_dia = 1.4 if dia_semana in [4, 5, 6] else 1.0
 
-            # Aplicação de fatores sazonais
             multiplicador_mes = 1.0
             if mes in [3, 4] and fator_pascoa > 1.0:
                 multiplicador_mes = fator_pascoa
@@ -117,7 +129,6 @@ def popular_dados_iniciais(db: Session, force: bool = False):
             elif mes in [12, 1, 2] and fator_verao > 1.0:
                 multiplicador_mes = fator_verao
 
-            # Probabilidade de promoção (~10% dos dias)
             em_promocao = random.random() < 0.10
             mult_promo = 1.5 if em_promocao else 1.0
 
@@ -143,5 +154,5 @@ def popular_dados_iniciais(db: Session, force: bool = False):
         "status": "sucesso",
         "total_produtos": len(produtos_persistidos),
         "total_vendas": total_vendas_geradas,
-        "usuario_criado": gestor.email
+        "usuario_criado": admin.email
     }

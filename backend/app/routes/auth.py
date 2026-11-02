@@ -16,18 +16,19 @@ router = APIRouter(prefix="/auth", tags=["Autenticação"])
 @router.post("/login", response_model=LoginResponse)
 def login(dados: LoginRequest, db: Session = Depends(get_db)):
     """
-    Autenticação simples e direta do gestor de estoque.
+    Autenticação do gestor de estoque.
+    Usuário padrão: admin (admin@admin.com / admin)
     """
     hash_informado = hash_senha(dados.senha)
     usuario = db.query(Usuario).filter(Usuario.email == dados.email).first()
 
-    # Caso seja a primeira execução e o banco ainda esteja vazio, permite acesso com credenciais default
-    if not usuario and dados.email == "gestor@supermercado.com" and dados.senha == "admin123":
+    # Fallback caso o banco tenha sido recriado em tempo de execução
+    if not usuario and dados.email == "admin@admin.com" and dados.senha == "admin":
         return LoginResponse(
-            token="predikta-session-token-demo",
-            nome="Gestor Supermercado (Demo)",
-            email=dados.email,
-            cargo="Gerente de Suprimentos & Estoque"
+            token="sessao-token-admin",
+            nome="admin",
+            email="admin@admin.com",
+            cargo="Administrador de Estoque"
         )
 
     if not usuario or usuario.senha_hash != hash_informado:
@@ -42,4 +43,3 @@ def login(dados: LoginRequest, db: Session = Depends(get_db)):
         email=usuario.email,
         cargo=usuario.cargo
     )
-
