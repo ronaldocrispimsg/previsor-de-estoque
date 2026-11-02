@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 scripts/run.py
-Inicia o servidor web da Predikta Data Solutions (FastAPI + Interface Web).
+Inicia o servidor web do Previsor de Estoque (FastAPI + Interface Web).
 Seleciona automaticamente uma porta livre caso a padrão esteja ocupada.
 """
 
@@ -36,12 +36,13 @@ if __name__ == "__main__":
                 break
 
     print("\n" + "=" * 62)
-    print("🚀 PREDIKTA DATA SOLUTIONS - SISTEMA WEB DE PREVISÃO DE DEMANDA")
+    print("PREVISOR DE ESTOQUE - SISTEMA DE PREVISAO DE DEMANDA")
     print("=" * 62)
-    print(f"👉 Interface Web & Dashboard: http://localhost:{porta_desejada}")
-    print(f"👉 Documentação Interativa (Swagger): http://localhost:{porta_desejada}/docs")
-    print(f"👉 Documentação ReDoc: http://localhost:{porta_desejada}/redoc")
-    print(f"👉 Credenciais Demo: gestor@supermercado.com / admin123")
+    print(f"Interface Web & Dashboard: http://localhost:{porta_desejada}")
+    print(f"Documentacao Interativa (Swagger): http://localhost:{porta_desejada}/docs")
+    print(f"Documentacao ReDoc: http://localhost:{porta_desejada}/redoc")
+    print(f"Credenciais Padrao: admin@admin.com / admin")
+    print(f"Preenchimento Automatico: python3 scripts/popular_dados.py")
     print("=" * 62 + "\n")
 
     uvicorn.run("backend.app.main:app", host=host, port=porta_desejada, reload=False)
