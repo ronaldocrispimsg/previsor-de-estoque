@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predikta Data Solutions - Previsão de Demanda & Gestão de Estoque</title>
+  <!-- Tailwind CSS v3 via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js para gráficos interativos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- ================= TELA DE LOGIN ================= -->
+  <div id="tela-login" class="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
+    <!-- Efeito de gradiente de fundo -->
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
+
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-100 relative z-10">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-14 h-14 bg-emerald-100 text-emerald-700 rounded-xl mb-3 shadow-inner">
+          <span class="text-3xl font-extrabold tracking-tighter">P</span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">PREDIKTA</h1>
+        <p class="text-xs uppercase tracking-widest text-emerald-600 font-bold">DATA SOLUTIONS</p>
+        <p class="text-xs text-slate-500 mt-2">Solução de Previsão de Demanda e Apoio à Gestão de Estoque para Supermercados</p>
+      </div>
+
+      <div id="login-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg font-medium"></div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email do Gestor</label>
+          <input type="email" id="login-email" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" placeholder="gestor@supermercado.com">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Senha de Acesso</label>
+          <input type="password" id="login-senha" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition" placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow-md transition-all">
+          Acessar Painel do Gestor
+        </button>
+      </form>
+
+      <div class="mt-6 pt-5 border-t border-slate-100 flex flex-col gap-2">
+        <button id="btn-preencher-demo" type="button" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-colors">
+          ✨ Preencher Credenciais de Demonstração
+        </button>
+        <p class="text-center text-[11px] text-slate-400 mt-2">
+          IFNMG Januária • Bacharelado em Sistemas de Informação
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= APLICAÇÃO PRINCIPAL ================= -->
+  <div id="app-principal" class="hidden flex-1 flex flex-col">
+
+    <!-- Topbar Corporativa -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo & Marca -->
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-emerald-600 text-white flex items-center justify-center font-black rounded-lg shadow-sm text-lg">
+              P
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-extrabold text-slate-900 tracking-tight text-lg">PREDIKTA</span>
+                <span class="text-xs px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold uppercase">Supermercados</span>
+              </div>
+              <p class="text-[10px] text-slate-400 font-medium">Antecipar a demanda antes que o problema aconteça</p>
+            </div>
+          </div>
+
+          <!-- Ações e Usuário -->
+          <div class="flex items-center gap-4">
+            <button onclick="window.Navegacao.resetarDemonstracao()" title="Recarrega a base com catálogo e histórico sazonal" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+              🔄 Resetar Demo
+            </button>
+
+            <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
+            <div class="flex items-center gap-3 text-right">
+              <div class="hidden sm:block">
+                <p id="user-nome-topo" class="text-xs font-bold text-slate-800">Gestor Supermercado</p>
+                <p id="user-cargo-topo" class="text-[10px] text-slate-500">Gerência de Suprimentos</p>
+              </div>
+              <button id="btn-logout" class="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Sair do Sistema">
+                <span class="text-sm">🚪 Sair</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Navegação por Abas (Proposta de Telas) -->
+        <nav class="flex space-x-1 sm:space-x-4 border-t border-slate-100 overflow-x-auto py-1">
+          <button onclick="window.Navegacao.irParaAba('dashboard')" id="nav-dashboard" class="nav-btn px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-emerald-700 bg-emerald-50 whitespace-nowrap transition-colors">
+            📊 Dashboard
+          </button>
+          <button onclick="window.Navegacao.irParaAba('produtos')" id="nav-produtos" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
+            🏷️ Produtos & Estoque
+          </button>
+          <button onclick="window.Navegacao.irParaAba('previsao')" id="nav-previsao" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
+            📈 Previsão de Demanda
+          </button>
+          <button onclick="window.Navegacao.irParaAba('sazonalidade')" id="nav-sazonalidade" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
+            🗓️ Análise de Sazonalidade
+          </button>
+          <button onclick="window.Navegacao.irParaAba('alertas')" id="nav-alertas" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
+            🚨 Alertas & Rupturas
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Conteúdo Dinâmico das Telas -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+      <!-- ================= ABA 1: DASHBOARD ================= -->
+      <section id="aba-dashboard" class="tab-content active space-y-6">
+        <!-- Banner de Mudança de Paradigma -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-700">
+          <div class="space-y-1">
+            <span class="text-xs uppercase font-bold tracking-widest text-emerald-400">Da Gestão Reativa à Preditiva</span>
+            <h2 class="text-xl sm:text-2xl font-black">Previsão Inteligente de Demanda para Supermercados</h2>
+            <p class="text-sm text-slate-300 max-w-2xl">
+              Transforme históricos de vendas em decisões assertivas de reposição antes que rupturas ou desperdícios ocorram.
+            </p>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 text-center min-w-[180px]">
+            <span class="text-3xl font-black text-emerald-400" id="stat-reducao-perdas">18%</span>
+            <p class="text-xs text-slate-200 font-semibold mt-1">Redução Potencial de Perdas</p>
+          </div>
+        </div>
+
+        <!-- Grade de Indicadores (KPIs) -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Catálogo</span>
+            <p id="stat-total-produtos" class="text-2xl font-black text-slate-800 mt-1">--</p>
+            <span class="text-[10px] text-slate-500 font-medium">Produtos ativos</span>
+          </div>
+
+          <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Vendas (30d)</span>
+            <p id="stat-vendas-30d" class="text-2xl font-black text-emerald-600 mt-1">--</p>
+            <span class="text-[10px] text-slate-500 font-medium">Itens comercializados</span>
+          </div>
+
+          <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Receita (30d)</span>
+            <p id="stat-receita-30d" class="text-2xl font-black text-slate-800 mt-1">--</p>
+            <span class="text-[10px] text-slate-500 font-medium">Giro de faturamento</span>
+          </div>
+
+          <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Acurácia IA</span>
+            <p id="stat-acuracia" class="text-2xl font-black text-blue-600 mt-1">--</p>
+            <span class="text-[10px] text-slate-500 font-medium">Confiabilidade média</span>
+          </div>
+
+          <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Risco Ruptura</span>
+            <p id="stat-alertas-ruptura" class="text-2xl font-black text-red-600 mt-1">--</p>
+            <span class="text-[10px] text-red-600 font-medium font-semibold">Reposição urgente</span>
+          </div>
+
+          <div class="metric-card bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Excesso Estoque</span>
+            <p id="stat-alertas-excesso" class="text-2xl font-black text-purple-600 mt-1">--</p>
+            <span class="text-[10px] text-purple-600 font-medium font-semibold">Capital parado</span>
+          </div>
+        </div>
+
+        <!-- Gráficos Principais -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="font-bold text-slate-800 text-base">Evolução de Vendas & Projeção Futura</h3>
+                <p class="text-xs text-slate-500">Histórico real vs Previsão de demanda para os próximos períodos</p>
+              </div>
+              <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded font-medium">Agrupamento Diário</span>
+            </div>
+            <div class="h-72 w-full">
+              <canvas id="chart-vendas-evolucao"></canvas>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+            <div class="mb-4">
+              <h3 class="font-bold text-slate-800 text-base">Participação por Categoria</h3>
+              <p class="text-xs text-slate-500">Distribuição do volume total de mercadorias</p>
+            </div>
+            <div class="h-64 w-full flex items-center justify-center">
+              <canvas id="chart-categorias-rosca"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Widget de Alertas Críticos no Dashboard -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base">Alertas Urgentes de Gestão de Estoque</h3>
+              <p class="text-xs text-slate-500">Produtos com risco imediato de falta na gôndola ou estoque ocioso</p>
+            </div>
+            <button onclick="window.Navegacao.irParaAba('alertas')" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold bg-emerald-50 px-3 py-1.5 rounded-lg">
+              Ver Todos os Alertas →
+            </button>
+          </div>
+          <div id="lista-alertas-dashboard" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Preenchido via dashboard.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 2: PRODUTOS ================= -->
+      <section id="aba-produtos" class="tab-content space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200">
+          <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <input type="text" id="filtro-produto-busca" placeholder="🔍 Buscar produto por nome..." class="px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none w-full sm:w-64">
+            
+            <select id="filtro-produto-categoria" class="px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+              <option value="">Todas as Categorias</option>
+            </select>
+
+            <select id="filtro-produto-status" class="px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+              <option value="">Todos os Status</option>
+              <option value="RUPTURA">Ruptura (Crítico)</option>
+              <option value="ATENCAO">Atenção (Baixo)</option>
+              <option value="EXCESSO">Excesso</option>
+              <option value="EQUILIBRADO">Equilibrado</option>
+            </select>
+          </div>
+
+          <button onclick="window.Produtos.abrirModalNovo()" class="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2">
+            <span>+</span> Novo Produto
+          </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-200">
+                  <th class="py-3 px-4">Produto</th>
+                  <th class="py-3 px-4">Categoria</th>
+                  <th class="py-3 px-4">Preço Base</th>
+                  <th class="py-3 px-4">Estoque Atual</th>
+                  <th class="py-3 px-4">Estoque Mínimo</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-produtos-corpo">
+                <!-- Preenchido via produtos.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 3: PREVISÃO DE DEMANDA ================= -->
+      <section id="aba-previsao" class="tab-content space-y-6">
+        <!-- Controles de Simulação Preditiva -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div class="flex-1 max-w-md">
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Selecione o Produto para Análise:</label>
+            <select id="previsao-select-produto" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none">
+              <!-- Preenchido via previsao.js -->
+            </select>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Horizonte de Tempo:</label>
+              <div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
+                <button type="button" data-dias="7" class="btn-horizonte px-3 py-1.5 text-xs font-semibold rounded-md bg-slate-100 text-slate-700">7 Dias</button>
+                <button type="button" data-dias="15" class="btn-horizonte px-3 py-1.5 text-xs font-semibold rounded-md bg-emerald-600 text-white">15 Dias</button>
+                <button type="button" data-dias="30" class="btn-horizonte px-3 py-1.5 text-xs font-semibold rounded-md bg-slate-100 text-slate-700">30 Dias</button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-4">
+              <input type="checkbox" id="previsao-check-promocao" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+              <label for="previsao-check-promocao" class="text-xs font-semibold text-slate-700 cursor-pointer">Simular Promoção (-15%)</label>
+            </div>
+
+            <div class="pt-4">
+              <button id="btn-gerar-previsao" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-all">
+                💾 Salvar Previsão no Banco
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Indicador de Carregamento -->
+        <div id="previsao-loading" class="hidden text-center py-4 text-emerald-600 text-sm font-semibold">
+          Calculando decomposição sazonal e holdout temporal...
+        </div>
+
+        <!-- Cartões de Resultado da Previsão -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase block">Demanda Prevista</span>
+            <p id="prev-resumo-demanda" class="text-2xl font-black text-blue-600 mt-1">--</p>
+            <span class="text-[10px] text-slate-500" id="prev-resumo-periodo">--</span>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase block">Estoque Atual</span>
+            <p id="prev-resumo-estoque" class="text-2xl font-black text-slate-800 mt-1">--</p>
+            <span id="prev-resumo-risco" class="badge-status badge-equilibrado mt-1">--</span>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase block">Sugestão de Reposição</span>
+            <p id="prev-resumo-sugestao" class="text-2xl font-black text-emerald-600 mt-1">--</p>
+            <span class="text-[10px] text-slate-500">Quantidade a comprar</span>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-[11px] font-bold text-slate-400 uppercase block">Fator Sazonal Ativo</span>
+            <p id="prev-resumo-sazonalidade" class="text-sm font-bold text-slate-800 mt-2">--</p>
+            <span class="text-[10px] text-emerald-600 font-semibold">Multiplicador do período</span>
+          </div>
+        </div>
+
+        <!-- Gráfico Detalhado de Previsão com Faixa de Incerteza -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base" id="prev-resumo-produto">Projeção Detalhada</h3>
+              <p class="text-xs text-slate-500">Histórico de vendas recentes vs Demanda projetada dia a dia</p>
+            </div>
+            <span class="text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-semibold">Intervalo de Confiança 95%</span>
+          </div>
+          <div class="h-80 w-full">
+            <canvas id="chart-previsao-detalhado"></canvas>
+          </div>
+        </div>
+
+        <!-- Painel Científico de Métricas de Avaliação -->
+        <div class="bg-slate-900 text-white p-5 rounded-2xl shadow-lg">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+            <div>
+              <h4 class="font-bold text-sm text-emerald-400">Validação e Métricas Científicas do Modelo</h4>
+              <p class="text-xs text-slate-400">Aferidas em teste cego temporal (Holdout sem vazamento de dados)</p>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded font-mono">SEÇÃO 19 - QUALIDADE</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div class="p-3 bg-slate-800/60 rounded-xl">
+              <span class="text-[11px] text-slate-400 uppercase block">Acurácia Estimada</span>
+              <p id="prev-metric-acuracia" class="text-xl font-bold text-emerald-400 mt-1">--</p>
+            </div>
+            <div class="p-3 bg-slate-800/60 rounded-xl">
+              <span class="text-[11px] text-slate-400 uppercase block">MAE (Erro Absoluto)</span>
+              <p id="prev-metric-mae" class="text-xl font-bold text-slate-200 mt-1">--</p>
+            </div>
+            <div class="p-3 bg-slate-800/60 rounded-xl">
+              <span class="text-[11px] text-slate-400 uppercase block">RMSE (Erro Quadrático)</span>
+              <p id="prev-metric-rmse" class="text-xl font-bold text-slate-200 mt-1">--</p>
+            </div>
+            <div class="p-3 bg-slate-800/60 rounded-xl">
+              <span class="text-[11px] text-slate-400 uppercase block">MAPE (Erro %)</span>
+              <p id="prev-metric-mape" class="text-xl font-bold text-slate-200 mt-1">--</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 4: SAZONALIDADE ================= -->
+      <section id="aba-sazonalidade" class="tab-content space-y-6">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold text-slate-800 text-base mb-1">Mapeamento de Sazonalidades e Datas Comemorativas</h3>
+          <p class="text-xs text-slate-500">
+            Selecione uma data festiva para visualizar o impacto antecipado nos produtos do supermercado.
+          </p>
+          <div id="botoes-eventos-sazonais" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+            <!-- Preenchido via sazonalidade.js -->
+          </div>
+        </div>
+
+        <!-- Detalhe do Evento Selecionado -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs font-bold text-emerald-600 uppercase" id="sazonal-periodo">--</span>
+              <h3 class="text-xl font-extrabold text-slate-900" id="sazonal-nome">--</h3>
+              <p class="text-xs text-slate-500 mt-1" id="sazonal-descricao">--</p>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl text-center">
+              <span class="text-xs font-semibold text-emerald-800 block">Pico Médio Histórico</span>
+              <span class="text-lg font-black text-emerald-700" id="sazonal-multiplicador">--</span>
+            </div>
+          </div>
+
+          <!-- Tabela de Produtos Impactados -->
+          <h4 class="text-sm font-bold text-slate-800 pt-2">Produtos do Supermercado com Salto Sazonal Previsto</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-200">
+                  <th class="py-3 px-4">Produto</th>
+                  <th class="py-3 px-4">Categoria</th>
+                  <th class="py-3 px-4">Demanda Padrão (30d)</th>
+                  <th class="py-3 px-4">Demanda Sazonal (30d)</th>
+                  <th class="py-3 px-4">Estoque Atual</th>
+                  <th class="py-3 px-4">Diagnóstico Sem Previsão</th>
+                  <th class="py-3 px-4 text-right">Ação Antecipada</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-sazonal-produtos">
+                <!-- Preenchido via sazonalidade.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 5: ALERTAS & RUPTURAS ================= -->
+      <section id="aba-alertas" class="tab-content space-y-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">Painel de Alertas de Ruptura e Excesso de Estoque</h3>
+            <p class="text-xs text-slate-500">
+              Diagnóstico contínuo comparando estoque disponível vs demanda prevista para os próximos 15 dias.
+            </p>
+          </div>
+          <button onclick="window.Alertas.carregar()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors">
+            🔄 Atualizar Diagnóstico
+          </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-200">
+                  <th class="py-3 px-4">Produto</th>
+                  <th class="py-3 px-4">Categoria</th>
+                  <th class="py-3 px-4">Estoque Atual</th>
+                  <th class="py-3 px-4">Demanda Prevista</th>
+                  <th class="py-3 px-4">Cobertura Estimada</th>
+                  <th class="py-3 px-4">Classificação de Risco</th>
+                  <th class="py-3 px-4 text-right">Ação Sugerida</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-alertas-corpo">
+                <!-- Preenchido via alertas.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Rodapé Institucional -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:flex sm:justify-between sm:items-center text-xs text-slate-400">
+        <p><strong>Predikta Data Solutions</strong> © 2026 • Protótipo de Previsão de Demanda para Supermercados</p>
+        <p class="mt-1 sm:mt-0">IFNMG - Campus Januária • Bacharelado em Sistemas de Informação</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ================= MODAL: NOVO PRODUTO ================= -->
+  <div id="modal-novo-produto" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-base font-bold text-slate-900">Cadastrar Novo Produto</h3>
+        <button onclick="window.Produtos.fecharModalNovo()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <form id="form-novo-produto" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nome do Produto</label>
+          <input type="text" id="novo-prod-nome" required placeholder="Ex: Panetone Recheado 500g" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Categoria</label>
+          <select id="novo-prod-categoria" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+            <!-- Preenchido dinamicamente -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Preço Base (R$)</label>
+            <input type="number" step="0.01" id="novo-prod-preco" required placeholder="19.90" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Estoque Inicial</label>
+            <input type="number" id="novo-prod-estoque" required value="20" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Estoque Mínimo</label>
+            <input type="number" id="novo-prod-estoque-min" required value="10" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Lead Time (dias)</label>
+            <input type="number" id="novo-prod-leadtime" required value="3" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="window.Produtos.fecharModalNovo()" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg hover:bg-slate-200">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm">
+            Salvar Produto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts da Aplicação -->
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/produtos.js"></script>
+  <script src="/static/js/previsao.js"></script>
+  <script src="/static/js/sazonalidade.js"></script>
+  <script src="/static/js/alertas.js"></script>
+
+  <!-- Orquestrador de Navegação -->
+  <script>
+    window.Navegacao = {
+      abaAtual: 'dashboard',
+
+      irParaAba(abaId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          btn.classList.remove('text-emerald-700', 'bg-emerald-50');
+          btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+        });
+
+        const target = document.getElementById(`aba-${abaId}`);
+        const btn = document.getElementById(`nav-${abaId}`);
+
+        if (target) target.classList.add('active');
+        if (btn) {
+          btn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+          btn.classList.add('text-emerald-700', 'bg-emerald-50');
+        }
+
+        this.abaAtual = abaId;
+
+        // Dispara o carregamento sob demanda
+        if (abaId === 'dashboard' && window.Dashboard) window.Dashboard.carregar();
+        if (abaId === 'produtos' && window.Produtos) window.Produtos.carregar();
+        if (abaId === 'previsao' && window.Previsao) window.Previsao.carregar();
+        if (abaId === 'sazonalidade' && window.Sazonalidade) window.Sazonalidade.carregar();
+        if (abaId === 'alertas' && window.Alertas) window.Alertas.carregar();
+      },
+
+      async resetarDemonstracao() {
+        if (!confirm('Deseja recarregar toda a base demonstrativa (catálogo de supermercado, histórico de vendas e sazonalidade)?')) {
+          return;
+        }
+        try {
+          await Api.post('/seed/popular?force=true');
+          alert('Base de demonstração recarregada com sucesso!');
+          this.irParaAba(this.abaAtual);
+        } catch (err) {
+          alert('Erro ao resetar: ' + err.message);
+        }
+      }
+    };
+
+    // Inicialização ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.init();
+    });
+  </script>
+</body>
+</html>
