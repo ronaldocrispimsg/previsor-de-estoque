@@ -1,23 +1,16 @@
-# Predikta Data Solutions
+# Previsor de Estoque
 ### Solução de Previsão de Demanda e Apoio à Gestão de Estoque para Supermercados
 
-Protótipo de sistema web voltado a pequenos e médios supermercados para substituição da gestão puramente reativa ou baseada em "feeling" por tomadas de decisão orientadas a dados e inteligência preditiva.
+Sistema web corporativo voltado a pequenos e médios supermercados para substituição da gestão puramente reativa ou baseada em "feeling" por tomadas de decisão orientadas a dados e inteligência preditiva.
 
-> **Contexto Institucional**: Instituto Federal do Norte de Minas Gerais (IFNMG) - Campus Januária  
-> **Curso**: Bacharelado em Sistemas de Informação  
-> **Disciplina**: Gerência de Projetos (Prof. João Pedro)  
-> **Equipe**:
-> - **João Pedro**: Líder de Projeto e Negócios
-> - **Victor Daniel**: Engenheiro de Dados e Desenvolvedor Back-end
-> - **Rafael**: Desenvolvedor Front-end & UX / Cientista de Dados
-> - **Ronaldo Crispim**: Desenvolvedor e Integrador Técnico
+> Para a documentação arquitetural, matemática e operacional completa, consulte [docs/DOCUMENTACAO_TECNICA.md](docs/DOCUMENTACAO_TECNICA.md).
 
 ---
 
 ## 1. Visão Geral e Arquitetura
 
-O sistema opera sobre o pipeline do fluxo de inteligência preditiva:
-$$\text{Histórico de Vendas} \longrightarrow \text{Banco de Dados} \longrightarrow \text{Tratamento} \longrightarrow \text{Modelo Preditivo} \longrightarrow \text{Dashboard} \longrightarrow \text{Decisão}$$
+O sistema opera sobre o fluxo de inteligência preditiva:
+$$\text{Histórico de Vendas} \longrightarrow \text{Tratamento e Higienização} \longrightarrow \text{Modelo Preditivo} \longrightarrow \text{Gestão e Alertas} \longrightarrow \text{Decisão de Compra}$$
 
 ```text
 previsor-de-estoque/
@@ -28,15 +21,18 @@ previsor-de-estoque/
 │       ├── main.py                # Aplicação FastAPI e servidor estático
 │       ├── models/                # Entidades relacionais (Produto, Venda, Previsao, Usuario)
 │       ├── routes/                # Endpoints REST (auth, produtos, vendas, previsões, sazonalidade, alertas, dashboard)
-│       ├── schemas/               # Contratos Pydantic com inteligência explicável (XAI)
+│       ├── schemas/               # Contratos Pydantic com validação rigorosa
 │       └── services/              # Ingestão CSV, decomposição sazonal e cálculo de métricas
-├── frontend/                      # Interface Web responsiva (SPA)
-│   ├── index.html                 # Painel do gestor (Dashboard, Catálogo, Vendas/CSV, Previsão, Sazonalidade)
-│   ├── css/style.css              # Custom tokens, badges de ruptura, estados de estoque e toasts
+├── docs/
+│   └── DOCUMENTACAO_TECNICA.md    # Especificação técnica, matemática e arquitetural completa
+├── frontend/                      # Interface Web responsiva (SPA corporativa)
+│   ├── index.html                 # Painel unificado (Inicio, Estoque, Vendas, Previsão, Analise de Sazonalidade, Alertas)
+│   ├── css/style.css              # Custom tokens, badges de status, modais e toasts
 │   └── js/                        # Módulos: api, auth, dashboard, produtos, vendas, previsao, sazonalidade, alertas
 ├── tests/                         # Suíte de testes automatizados com pytest (15 testes)
 ├── scripts/
 │   ├── run.py                     # Inicializador do servidor HTTP com auto-seleção de porta
+│   ├── popular_dados.py           # Script para preenchimento de dados de supermercado sob demanda
 │   └── backup_chat.py             # Backup contínuo de conversas do agente
 └── requirements.txt
 ```
@@ -60,13 +56,13 @@ previsor-de-estoque/
 
 ## 3. Telas do Protótipo (Seção 15 do Relatório)
 
-1. **Login**: Autenticação com credenciais demonstrativas (`gestor@supermercado.com` / `admin123`).
-2. **Dashboard do Gestor**: Cards de KPIs (Giro 30d, Acurácia média, Alertas de ruptura/excesso, Redução estimada de perdas de 18%), gráfico de vendas históricas vs projeção, rosca por categoria, rankings de Top 5 produtos e diagrama do fluxo.
-3. **Catálogo de Produtos & Estoque**: Tabela com filtros, ajuste rápido de estoque (+20), modal de edição, ponto de pedido e lead time.
-4. **Vendas & Ingestão CSV**: Histórico de transações, registro manual de vendas com baixa imediata no estoque, download de modelo CSV e upload com higienização automática.
-5. **Previsão de Demanda**: Simulação por produto nos horizontes de 7, 15 e 30 dias, simulação de promoção, curva com intervalo de 95%, métricas científicas (MAE, RMSE, MAPE) e exportação em CSV.
-6. **Análise de Sazonalidade**: Curva anual de 12 meses de cada evento (Páscoa, Festa Junina, Verão, Natal), comparativo Reativo vs Preditivo e produtos impactados.
-7. **Alertas & Gestão de Estoque**: Classificação de risco (Ruptura Iminente, Ponto de Pedido, Excesso), impacto financeiro em R$ e reposição com 1 clique.
+1. **Login**: Autenticação com credenciais padrão (`admin@admin.com` / `admin`).
+2. **Inicio**: Cards de KPIs (Giro 30d, Acurácia média, Alertas de ruptura/excesso, Redução de perdas), gráfico de vendas históricas vs projeção, distribuição por categoria, rankings de Top 5 produtos e resumo de ações imediatas de reposição.
+3. **Estoque**: Tabela com filtros, ajuste rápido de estoque (+20), cadastro de produtos, ponto de pedido e lead time.
+4. **Vendas**: Histórico de transações, registro manual de vendas com baixa imediata no estoque, download de modelo CSV e upload com higienização automática.
+5. **Previsão**: Simulação por produto nos horizontes de 7, 15 e 30 dias, simulação de promoção, curva com intervalo de 95%, métricas científicas (MAE, RMSE, MAPE) e exportação em CSV.
+6. **Analise de Sazonalidade**: Curva anual de 12 meses de cada evento (Páscoa, Festa Junina, Verão, Natal), comparativo Reativo vs Preditivo e produtos impactados.
+7. **Alertas**: Classificação de risco (Ruptura Iminente, Ponto de Pedido, Excesso), impacto financeiro em R$ e reposição com 1 clique.
 
 ---
 
@@ -81,12 +77,16 @@ previsor-de-estoque/
 # Ative o ambiente virtual
 source .venv/bin/activate
 
-# Execute o servidor web
+# Execute o servidor web (inicializa com banco limpo e usuário admin)
 python3 scripts/run.py
+
+# Opcional: Para preencher o banco com dados de supermercado demonstrativos
+python3 scripts/popular_dados.py
 ```
 Acesse no navegador:
 - **Aplicação Web**: [http://localhost:8080](http://localhost:8080) (ou 8000)
 - **Documentação Interativa (Swagger)**: [http://localhost:8080/docs](http://localhost:8080/docs)
+- **Credenciais**: `admin@admin.com` / `admin`
 
 ---
 
