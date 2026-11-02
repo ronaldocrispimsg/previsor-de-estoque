@@ -34,3 +34,4 @@ class VendaImportItem(VendaBase):
 
 class VendaImportBatch(BaseModel):
     vendas: List[VendaImportItem]
+

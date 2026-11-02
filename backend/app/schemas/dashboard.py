@@ -18,6 +18,15 @@ class AlertaEstoque(BaseModel):
     dias_cobertura_estoque: float
     sugestao_acao: str
     quantidade_sugerida: float
+    impacto_financeiro_estimado: float = 0.0
+
+
+class ProdutoDestaque(BaseModel):
+    id_produto: int
+    nome: str
+    categoria: str
+    valor: float
+    detalhe: str
 
 
 class DashboardStatsResponse(BaseModel):
@@ -28,6 +37,8 @@ class DashboardStatsResponse(BaseModel):
     alertas_ruptura: int
     alertas_excesso: int
     reducao_estimada_perdas_pct: float = 18.0  # Métrica validada na apresentação Predikta
+    produtos_em_alta: List[ProdutoDestaque] = []
+    alertas_urgentes: List[ProdutoDestaque] = []
 
 
 class GraficoPonto(BaseModel):
@@ -43,6 +54,12 @@ class GraficoCategoria(BaseModel):
     participacao_pct: float
 
 
+class MesIndiceSazonal(BaseModel):
+    mes_nome: str
+    indice: float
+    destaque: bool = False
+
+
 class SazonalidadeEvento(BaseModel):
     id_evento: str
     nome: str
@@ -51,4 +68,6 @@ class SazonalidadeEvento(BaseModel):
     descricao: str
     exemplo_produtos: List[str]
     multiplicador_medio: float
+    impacto_financeiro_potencial: float = 0.0
+    curva_anual_indices: List[MesIndiceSazonal] = []
     produtos_impactados: List[dict]

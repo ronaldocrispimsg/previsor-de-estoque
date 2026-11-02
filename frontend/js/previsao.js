@@ -1,22 +1,21 @@
 /**
  * frontend/js/previsao.js
- * Módulo de Inteligência Preditiva e visualização gráfica de previsões.
+ * Módulo de Inteligência Preditiva e visualização gráfica de previsões (Predikta).
  */
 
 window.Previsao = {
   graficoInstancia: null,
   produtoSelecionadoId: null,
+  ultimaPrevisaoCalculada: null,
 
   async carregar() {
     await this.popularSeletorProdutos();
     this.configurarEventos();
 
-    // Se já houver um produto selecionado, executa a previsão
     if (this.produtoSelecionadoId) {
       document.getElementById('previsao-select-produto').value = this.produtoSelecionadoId;
       await this.executarPrevisao();
     } else {
-      // Seleciona o primeiro produto disponível
       const select = document.getElementById('previsao-select-produto');
       if (select && select.options.length > 0) {
         this.produtoSelecionadoId = parseInt(select.options[0].value, 10);
@@ -40,6 +39,7 @@ window.Previsao = {
     const botoesHorizonte = document.querySelectorAll('.btn-horizonte');
     const checkPromo = document.getElementById('previsao-check-promocao');
     const btnGerar = document.getElementById('btn-gerar-previsao');
+    const btnExportar = document.getElementById('btn-exportar-previsao-csv');
 
     if (select) {
       select.addEventListener('change', (e) => {
@@ -64,6 +64,10 @@ window.Previsao = {
 
     if (btnGerar) {
       btnGerar.addEventListener('click', () => this.executarPrevisao(true));
+    }
+
+    if (btnExportar) {
+      btnExportar.addEventListener('click', () => this.exportarCSV());
     }
   },
 
@@ -96,7 +100,7 @@ window.Previsao = {
           horizonte_dias: horizonteDias,
           considerar_promocao: considerarPromocao
         });
-        alert('Previsão gerada e salva no histórico do banco com sucesso!');
+        window.Toast.mostrar('Previsão gerada e registrada no histórico do banco com sucesso!', 'sucesso');
       } else {
         dados = await Api.get(`/previsoes/${idProduto}`, {
           horizonte_dias: horizonteDias,
@@ -104,9 +108,10 @@ window.Previsao = {
         });
       }
 
+      this.ultimaPrevisaoCalculada = dados;
       this.renderizarResultados(dados);
     } catch (err) {
-      alert('Erro ao calcular previsão: ' + err.message);
+      window.Toast.mostrar('Erro ao calcular previsão: ' + err.message, 'erro');
     } finally {
       if (loadingEl) loadingEl.classList.add('hidden');
     }
@@ -115,6 +120,7 @@ window.Previsao = {
   renderizarResultados(dados) {
     const r = dados.resumo;
     const m = dados.metricas;
+    const dec = dados.decomposicao;
 
     document.getElementById('prev-resumo-produto').textContent = r.nome_produto;
     document.getElementById('prev-resumo-periodo').textContent = r.periodo;
@@ -126,6 +132,9 @@ window.Previsao = {
     if (r.status_risco === 'RUPTURA') {
       elRisco.className = 'badge-ruptura';
       elRisco.textContent = 'Risco de Ruptura';
+    } else if (r.status_risco === 'ATENCAO') {
+      elRisco.className = 'badge-atencao';
+      elRisco.textContent = 'Ponto de Pedido';
     } else if (r.status_risco === 'EXCESSO') {
       elRisco.className = 'badge-excesso';
       elRisco.textContent = 'Risco de Excesso';
@@ -137,10 +146,21 @@ window.Previsao = {
     document.getElementById('prev-resumo-sazonalidade').textContent = r.impacto_sazonal_identificado ?
       `${r.impacto_sazonal_identificado} (x${r.multiplicador_sazonal})` : 'Padrão Regular (x1.0)';
 
+    // Métricas científicas de qualidade
     document.getElementById('prev-metric-acuracia').textContent = `${m.acuracia_estimada}%`;
     document.getElementById('prev-metric-mae').textContent = `${m.mae} un`;
     document.getElementById('prev-metric-rmse').textContent = `${m.rmse} un`;
     document.getElementById('prev-metric-mape').textContent = `${m.mape}%`;
+
+    // Decomposição explicável das variáveis
+    if (dec) {
+      document.getElementById('dec-demanda-base').textContent = `${dec.demanda_base_diaria} un/dia`;
+      document.getElementById('dec-fator-semana').textContent = `x${dec.fator_dia_semana_medio}`;
+      document.getElementById('dec-fator-ciclo').textContent = `x${dec.fator_ciclo_mes}`;
+      document.getElementById('dec-fator-sazonal').textContent = `x${dec.fator_sazonal_festivo}`;
+      document.getElementById('dec-fator-promo').textContent = `x${dec.fator_promocional}`;
+      document.getElementById('dec-ponto-pedido').textContent = `${dec.ponto_de_pedido} un (Lead time: ${dec.lead_time_dias}d)`;
+    }
 
     this.renderizarGrafico(dados.serie_temporal);
   },
@@ -188,7 +208,7 @@ window.Previsao = {
             tension: 0.3
           },
           {
-            label: 'Intervalo Superior (95%)',
+            label: 'Limite Superior (95%)',
             data: supData,
             borderColor: 'rgba(148, 163, 184, 0.4)',
             borderWidth: 1,
@@ -197,7 +217,7 @@ window.Previsao = {
             fill: false
           },
           {
-            label: 'Intervalo Inferior (95%)',
+            label: 'Limite Inferior (95%)',
             data: infData,
             borderColor: 'rgba(148, 163, 184, 0.4)',
             borderWidth: 1,
@@ -220,5 +240,39 @@ window.Previsao = {
         }
       }
     });
+  },
+
+  exportarCSV() {
+    if (!this.ultimaPrevisaoCalculada) {
+      window.Toast.mostrar('Calcule uma previsão antes de exportar.', 'alerta');
+      return;
+    }
+    const r = this.ultimaPrevisaoCalculada.resumo;
+    const m = this.ultimaPrevisaoCalculada.metricas;
+    const dec = this.ultimaPrevisaoCalculada.decomposicao;
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Parametro;Valor\n";
+    csvContent += `Produto;${r.nome_produto}\n`;
+    csvContent += `Categoria;${r.categoria}\n`;
+    csvContent += `Periodo;${r.periodo}\n`;
+    csvContent += `Demanda Prevista;${r.demanda_prevista}\n`;
+    csvContent += `Estoque Atual;${r.estoque_atual}\n`;
+    csvContent += `Sugestao Reposicao;${r.sugestao_reposicao}\n`;
+    csvContent += `Status Risco;${r.status_risco}\n`;
+    csvContent += `Acuracia;${m.acuracia_estimada}%\n`;
+    csvContent += `MAE;${m.mae}\n`;
+    csvContent += `RMSE;${m.rmse}\n`;
+    csvContent += `MAPE;${m.mape}%\n`;
+    csvContent += `Ponto de Pedido;${dec.ponto_de_pedido}\n`;
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `previsao_${r.nome_produto.replace(/\s+/g, '_')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.Toast.mostrar('Previsão exportada com sucesso em CSV!');
   }
 };

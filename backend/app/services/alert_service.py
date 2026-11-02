@@ -1,6 +1,7 @@
 """
 backend/app/services/alert_service.py
 Serviço de Diagnóstico de Estoque e Emissão de Alertas Inteligentes (Predikta).
+Calcula indicadores de cobertura em dias e impacto financeiro (R$) estimado.
 """
 
 from typing import List
@@ -29,6 +30,8 @@ def gerar_alertas_estoque(db: Session, horizonte_dias: int = 15) -> List[AlertaE
 
         # Checagem de RUPTURA (Falta de Estoque)
         if p.estoque_atual <= 0:
+            qtd_falta = round(demanda_prevista + p.estoque_minimo, 1)
+            perda_faturamento = round(qtd_falta * p.preco_base, 2)
             alertas.append(
                 AlertaEstoque(
                     id_produto=p.id_produto,
@@ -39,11 +42,14 @@ def gerar_alertas_estoque(db: Session, horizonte_dias: int = 15) -> List[AlertaE
                     estoque_atual=p.estoque_atual,
                     demanda_prevista_periodo=demanda_prevista,
                     dias_cobertura_estoque=0.0,
-                    sugestao_acao=f"Ruptura Total! Emitir pedido urgente de reposição de pelo menos {int(demanda_prevista + p.estoque_minimo)} un.",
-                    quantidade_sugerida=round(demanda_prevista + p.estoque_minimo, 1),
+                    sugestao_acao=f"Ruptura Total! Emitir pedido urgente de reposição de pelo menos {int(qtd_falta)} un.",
+                    quantidade_sugerida=qtd_falta,
+                    impacto_financeiro_estimado=perda_faturamento
                 )
             )
-        elif p.estoque_atual < (demanda_prevista * 0.5):
+        elif p.estoque_atual < (demanda_prevista * 0.4):
+            qtd_comprar = round(demanda_prevista - p.estoque_atual, 1)
+            perda_faturamento = round(qtd_comprar * p.preco_base, 2)
             alertas.append(
                 AlertaEstoque(
                     id_produto=p.id_produto,
@@ -54,11 +60,13 @@ def gerar_alertas_estoque(db: Session, horizonte_dias: int = 15) -> List[AlertaE
                     estoque_atual=p.estoque_atual,
                     demanda_prevista_periodo=demanda_prevista,
                     dias_cobertura_estoque=dias_cobertura,
-                    sugestao_acao=f"Risco de Ruptura! Estoque cobre apenas {dias_cobertura} dias. Comprar {int(demanda_prevista - p.estoque_atual)} un.",
-                    quantidade_sugerida=round(demanda_prevista - p.estoque_atual, 1),
+                    sugestao_acao=f"Risco Severo de Ruptura! Estoque cobre apenas {dias_cobertura} dias. Comprar {int(qtd_comprar)} un.",
+                    quantidade_sugerida=qtd_comprar,
+                    impacto_financeiro_estimado=perda_faturamento
                 )
             )
-        elif p.estoque_atual < p.estoque_minimo:
+        elif p.estoque_atual < previsao.decomposicao.ponto_de_pedido:
+            qtd_repor = round(previsao.decomposicao.ponto_de_pedido - p.estoque_atual, 1)
             alertas.append(
                 AlertaEstoque(
                     id_produto=p.id_produto,
@@ -69,13 +77,15 @@ def gerar_alertas_estoque(db: Session, horizonte_dias: int = 15) -> List[AlertaE
                     estoque_atual=p.estoque_atual,
                     demanda_prevista_periodo=demanda_prevista,
                     dias_cobertura_estoque=dias_cobertura,
-                    sugestao_acao=f"Estoque abaixo do ponto de segurança ({p.estoque_minimo} un). Programar pedido preventivo.",
-                    quantidade_sugerida=round(p.estoque_minimo * 1.5 - p.estoque_atual, 1),
+                    sugestao_acao=f"Abaixo do ponto de pedido ({previsao.decomposicao.ponto_de_pedido} un). Programar compra preventiva.",
+                    quantidade_sugerida=qtd_repor,
+                    impacto_financeiro_estimado=round(qtd_repor * p.preco_base, 2)
                 )
             )
         # Checagem de EXCESSO de estoque
-        elif p.estoque_atual > (demanda_prevista * 2.5) and p.estoque_atual > 30:
-            qtd_excedente = round(p.estoque_atual - (demanda_prevista * 1.5), 1)
+        elif p.estoque_atual > (demanda_prevista * 2.2) and p.estoque_atual > 30:
+            qtd_excedente = round(p.estoque_atual - (demanda_prevista * 1.3), 1)
+            capital_imobilizado = round(qtd_excedente * p.preco_base, 2)
             alertas.append(
                 AlertaEstoque(
                     id_produto=p.id_produto,
@@ -86,8 +96,9 @@ def gerar_alertas_estoque(db: Session, horizonte_dias: int = 15) -> List[AlertaE
                     estoque_atual=p.estoque_atual,
                     demanda_prevista_periodo=demanda_prevista,
                     dias_cobertura_estoque=dias_cobertura,
-                    sugestao_acao=f"Excesso de estoque ({dias_cobertura} dias de giro). Risco de custo de armazenagem/validade. Avaliar promoção.",
+                    sugestao_acao=f"Excesso de estoque ({dias_cobertura} dias de cobertura). Risco de custo de estocagem/validade.",
                     quantidade_sugerida=qtd_excedente,
+                    impacto_financeiro_estimado=capital_imobilizado
                 )
             )
 

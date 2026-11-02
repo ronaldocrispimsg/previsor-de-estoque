@@ -42,3 +42,4 @@ def test_previsao_demanda_e_metricas(db_session):
     assert resp.metricas.rmse >= 0.0
     assert resp.metricas.mape >= 0.0
     assert len(resp.serie_temporal) > horizonte
+

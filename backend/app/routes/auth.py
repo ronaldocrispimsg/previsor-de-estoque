@@ -42,3 +42,4 @@ def login(dados: LoginRequest, db: Session = Depends(get_db)):
         email=usuario.email,
         cargo=usuario.cargo
     )
+

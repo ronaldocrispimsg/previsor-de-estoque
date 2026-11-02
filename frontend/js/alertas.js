@@ -6,7 +6,7 @@
 window.Alertas = {
   async carregar() {
     const tbody = document.getElementById('tabela-alertas-corpo');
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Verificando riscos de estoque...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Verificando riscos de estoque...</td></tr>`;
 
     try {
       const alertas = await Api.get('/alertas', { horizonte_dias: 15 });
@@ -14,7 +14,7 @@ window.Alertas = {
       if (!alertas || alertas.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="text-center py-10">
+            <td colspan="8" class="text-center py-10">
               <span class="text-3xl block mb-2">🎉</span>
               <p class="text-emerald-700 font-bold">Nenhum risco detectado!</p>
               <p class="text-xs text-slate-500">Todos os produtos estão com níveis saudáveis de cobertura de demanda.</p>
@@ -37,6 +37,9 @@ window.Alertas = {
           badgeIcon = '📦';
         }
 
+        const impactoFmt = a.impacto_financeiro_estimado > 0 ?
+          `R$ ${a.impacto_financeiro_estimado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '--';
+
         const tr = document.createElement('tr');
         tr.className = 'border-b border-slate-100 hover:bg-slate-50 text-sm';
         tr.innerHTML = `
@@ -45,6 +48,7 @@ window.Alertas = {
           <td class="py-3 px-4 font-bold ${a.estoque_atual === 0 ? 'text-red-600' : 'text-slate-800'}">${a.estoque_atual} un</td>
           <td class="py-3 px-4 font-medium text-slate-700">${a.demanda_prevista_periodo} un (15d)</td>
           <td class="py-3 px-4 font-semibold ${a.dias_cobertura_estoque < 4 ? 'text-red-600' : 'text-slate-600'}">${a.dias_cobertura_estoque} dias</td>
+          <td class="py-3 px-4 font-bold ${a.tipo_alerta === 'EXCESSO' ? 'text-purple-600' : 'text-red-600'}">${impactoFmt}</td>
           <td class="py-3 px-4"><span class="${badgeCls}">${badgeIcon} ${a.tipo_alerta}</span></td>
           <td class="py-3 px-4 text-right">
             ${a.tipo_alerta === 'RUPTURA' || a.tipo_alerta === 'ATENCAO' ? `
@@ -61,7 +65,7 @@ window.Alertas = {
         tbody.appendChild(tr);
       });
     } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Erro ao carregar alertas: ${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-red-500">Erro ao carregar alertas: ${err.message}</td></tr>`;
     }
   },
 
@@ -73,16 +77,19 @@ window.Alertas = {
 
     try {
       const resp = await Api.post(`/alertas/repor-estoque/${idProduto}`, { quantidade });
-      alert(resp.mensagem);
+      window.Toast.mostrar(resp.mensagem, 'sucesso');
       await this.carregar();
       if (window.Dashboard) window.Dashboard.carregar();
       if (window.Produtos) window.Produtos.carregarTabela();
     } catch (err) {
-      alert('Erro ao repor estoque: ' + err.message);
+      window.Toast.mostrar('Erro ao repor estoque: ' + err.message, 'erro');
     }
   },
 
   sugerirPromocao(nomeProduto, idProduto) {
-    alert(`💡 Dica Estratégica Predikta:\nPara escoar o excesso de "${nomeProduto}", sugere-se campanha com 15% de desconto para elevar a elasticidade de saída e evitar perda por vencimento.`);
+    window.Toast.mostrar(
+      `💡 Sugestão Estratégica: Para acelerar o giro de "${nomeProduto}", programe desconto promocional de 15% na aba Vendas.`,
+      'info'
+    );
   }
 };

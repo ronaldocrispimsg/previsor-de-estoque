@@ -76,3 +76,4 @@ const Auth = {
     document.getElementById('app-principal').classList.add('hidden');
   }
 };
+

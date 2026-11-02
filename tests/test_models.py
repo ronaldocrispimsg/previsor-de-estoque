@@ -56,3 +56,4 @@ def test_relacionamento_previsao(db_session):
 
     assert prev.id_previsao is not None
     assert prev.produto.id_produto == prod.id_produto
+

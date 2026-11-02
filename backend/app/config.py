@@ -15,3 +15,4 @@ SECRET_KEY = os.getenv("SECRET_KEY", "predikta-secret-supermarket-key-2026")
 PROJECT_NAME = "Predikta Data Solutions"
 PROJECT_DESCRIPTION = "Solução de Previsão de Demanda e Apoio à Gestão de Estoque para Supermercados"
 API_V1_STR = "/api"
+

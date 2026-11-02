@@ -9,3 +9,4 @@ from backend.app.models.previsao import Previsao
 from backend.app.models.usuario import Usuario
 
 __all__ = ["Produto", "Venda", "Previsao", "Usuario"]
+

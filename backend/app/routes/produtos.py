@@ -1,6 +1,6 @@
 """
 backend/app/routes/produtos.py
-Rotas RESTful para gerenciamento de Produtos.
+Rotas RESTful para gerenciamento de Produtos e Estoque de Supermercado.
 """
 
 from typing import List, Optional
@@ -8,7 +8,15 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from backend.app.database import get_db
 from backend.app.models.produto import Produto
-from backend.app.schemas.produto import ProdutoCreate, ProdutoListResponse, ProdutoResponse, ProdutoUpdate
+from backend.app.models.venda import Venda
+from backend.app.schemas.produto import (
+    ProdutoAjusteEstoque,
+    ProdutoCreate,
+    ProdutoListResponse,
+    ProdutoResponse,
+    ProdutoUpdate,
+)
+from backend.app.services.forecasting import prever_demanda_produto
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
@@ -46,6 +54,16 @@ def listar_produtos(
         if status_filtro and st != status_filtro:
             continue
 
+        # Calcula estimativa rápida de giro diário e ponto de pedido
+        vendas = db.query(Venda).filter(Venda.id_produto == p.id_produto).limit(60).all()
+        giro_dia = 5.0
+        ponto_ped = round(5.0 * p.lead_time_dias + p.estoque_minimo, 1)
+
+        if vendas:
+            total_qtd = sum(v.quantidade for v in vendas)
+            giro_dia = round(total_qtd / max(1, len(set(v.data for v in vendas))), 1)
+            ponto_ped = round(giro_dia * p.lead_time_dias + p.estoque_minimo, 1)
+
         resp = ProdutoResponse(
             id_produto=p.id_produto,
             nome=p.nome,
@@ -54,7 +72,9 @@ def listar_produtos(
             estoque_atual=p.estoque_atual,
             estoque_minimo=p.estoque_minimo,
             lead_time_dias=p.lead_time_dias,
-            status_estoque=st
+            status_estoque=st,
+            ponto_de_pedido=ponto_ped,
+            giro_diario_estimado=giro_dia
         )
         resultado.append(resp)
 
@@ -130,6 +150,29 @@ def atualizar_produto(id_produto: int, dados: ProdutoUpdate, db: Session = Depen
     if dados.lead_time_dias is not None:
         p.lead_time_dias = dados.lead_time_dias
 
+    db.commit()
+    db.refresh(p)
+
+    return ProdutoResponse(
+        id_produto=p.id_produto,
+        nome=p.nome,
+        categoria=p.categoria,
+        preco_base=p.preco_base,
+        estoque_atual=p.estoque_atual,
+        estoque_minimo=p.estoque_minimo,
+        lead_time_dias=p.lead_time_dias,
+        status_estoque=_determinar_status_estoque(p)
+    )
+
+
+@router.post("/{id_produto}/ajuste-estoque", response_model=ProdutoResponse)
+def ajustar_estoque(id_produto: int, dados: ProdutoAjusteEstoque, db: Session = Depends(get_db)):
+    p = db.query(Produto).filter(Produto.id_produto == id_produto).first()
+    if not p:
+        raise HTTPException(status_code=404, detail="Produto não encontrado")
+
+    novo_estoque = max(0, p.estoque_atual + dados.quantidade)
+    p.estoque_atual = novo_estoque
     db.commit()
     db.refresh(p)
 

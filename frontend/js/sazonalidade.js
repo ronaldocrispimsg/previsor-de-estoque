@@ -5,6 +5,7 @@
 
 window.Sazonalidade = {
   eventosCache: [],
+  graficoCurvaAnualInstancia: null,
 
   async carregar() {
     try {
@@ -33,7 +34,7 @@ window.Sazonalidade = {
           <span class="text-2xl">${icon}</span>
           <div>
             <h4 class="font-bold text-slate-800 text-sm">${ev.nome}</h4>
-            <p class="text-xs text-slate-500">${ev.periodo} • Multiplicador Médio: <strong class="text-emerald-700 font-semibold">+${round((ev.multiplicador_medio - 1)*100)}%</strong></p>
+            <p class="text-xs text-slate-500">${ev.periodo} • Multiplicador: <strong class="text-emerald-700 font-semibold">+${round((ev.multiplicador_medio - 1)*100)}%</strong></p>
           </div>
         </button>
       `;
@@ -44,7 +45,6 @@ window.Sazonalidade = {
     const evento = this.eventosCache.find(e => e.id_evento === idEvento);
     if (!evento) return;
 
-    // Atualiza classes ativas
     document.querySelectorAll('.btn-evento-sazonal').forEach(b => {
       b.classList.remove('border-emerald-600', 'ring-2', 'ring-emerald-100', 'bg-emerald-50/30');
     });
@@ -56,7 +56,14 @@ window.Sazonalidade = {
     document.getElementById('sazonal-nome').textContent = evento.nome;
     document.getElementById('sazonal-periodo').textContent = evento.periodo;
     document.getElementById('sazonal-descricao').textContent = evento.descricao;
-    document.getElementById('sazonal-multiplicador').textContent = `+${Math.round((evento.multiplicador_medio - 1.0) * 100)}% de Demanda Estimada`;
+    document.getElementById('sazonal-multiplicador').textContent = `+${Math.round((evento.multiplicador_medio - 1.0) * 100)}% de Pico Médio`;
+
+    const elImpactoFinanceiro = document.getElementById('sazonal-impacto-financeiro');
+    if (elImpactoFinanceiro) {
+      elImpactoFinanceiro.textContent = `R$ ${evento.impacto_financeiro_potencial.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    }
+
+    this.renderizarGraficoCurvaAnual(evento);
 
     const tbody = document.getElementById('tabela-sazonal-produtos');
     if (!tbody) return;
@@ -88,6 +95,59 @@ window.Sazonalidade = {
         </tr>
       `;
     }).join('');
+  },
+
+  renderizarGraficoCurvaAnual(evento) {
+    const canvas = document.getElementById('chart-sazonalidade-anual');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const labels = evento.curva_anual_indices.map(m => m.mes_nome);
+    const valores = evento.curva_anual_indices.map(m => m.indice);
+    const cores = evento.curva_anual_indices.map(m => m.destaque ? '#059669' : '#cbd5e1');
+
+    if (this.graficoCurvaAnualInstancia) {
+      this.graficoCurvaAnualInstancia.destroy();
+    }
+
+    this.graficoCurvaAnualInstancia = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Índice Relativo de Demanda Sazonal (Base = 1.0)',
+          data: valores,
+          backgroundColor: cores,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(ctx) {
+                const val = ctx.parsed.y;
+                return `Multiplicador: x${val} (${val > 1.0 ? '+' + Math.round((val - 1)*100) + '%' : 'Regular'})`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: '#f1f5f9' },
+            ticks: { font: { family: 'Inter', size: 10 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter', size: 10 } }
+          }
+        }
+      }
+    });
   }
 };
 

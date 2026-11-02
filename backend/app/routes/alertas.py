@@ -45,3 +45,4 @@ def repor_estoque(id_produto: int, dados: ReposicaoRequest, db: Session = Depend
         "mensagem": f"Estoque do produto '{produto.nome}' atualizado com sucesso.",
         "novo_estoque": produto.estoque_atual
     }
+

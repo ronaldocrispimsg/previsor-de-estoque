@@ -111,3 +111,4 @@ def obter_previsao_produto(
         horizonte_dias=horizonte_dias,
         considerar_promocao=considerar_promocao
     )
+

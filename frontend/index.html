@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Predikta Data Solutions - Previsão de Demanda & Gestão de Estoque</title>
-  <!-- Tailwind CSS v3 via CDN -->
+  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js para gráficos interativos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,7 +18,6 @@
 
   <!-- ================= TELA DE LOGIN ================= -->
   <div id="tela-login" class="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
-    <!-- Efeito de gradiente de fundo -->
     <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl"></div>
     <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
 
@@ -55,7 +54,7 @@
           ✨ Preencher Credenciais de Demonstração
         </button>
         <p class="text-center text-[11px] text-slate-400 mt-2">
-          IFNMG Januária • Bacharelado em Sistemas de Informação
+          IFNMG Januária • Bacharelado em Sistemas de Informação • Gerência de Projetos
         </p>
       </div>
     </div>
@@ -68,7 +67,6 @@
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-          <!-- Logo & Marca -->
           <div class="flex items-center gap-3">
             <div class="w-9 h-9 bg-emerald-600 text-white flex items-center justify-center font-black rounded-lg shadow-sm text-lg">
               P
@@ -82,7 +80,6 @@
             </div>
           </div>
 
-          <!-- Ações e Usuário -->
           <div class="flex items-center gap-4">
             <button onclick="window.Navegacao.resetarDemonstracao()" title="Recarrega a base com catálogo e histórico sazonal" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
               🔄 Resetar Demo
@@ -102,13 +99,16 @@
           </div>
         </div>
 
-        <!-- Barra de Navegação por Abas (Proposta de Telas) -->
-        <nav class="flex space-x-1 sm:space-x-4 border-t border-slate-100 overflow-x-auto py-1">
+        <!-- Barra de Navegação por Abas (Proposta de Telas + Ingestão) -->
+        <nav class="flex space-x-1 sm:space-x-3 border-t border-slate-100 overflow-x-auto py-1">
           <button onclick="window.Navegacao.irParaAba('dashboard')" id="nav-dashboard" class="nav-btn px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg text-emerald-700 bg-emerald-50 whitespace-nowrap transition-colors">
             📊 Dashboard
           </button>
           <button onclick="window.Navegacao.irParaAba('produtos')" id="nav-produtos" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
             🏷️ Produtos & Estoque
+          </button>
+          <button onclick="window.Navegacao.irParaAba('vendas')" id="nav-vendas" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
+            🛒 Vendas & Ingestão CSV
           </button>
           <button onclick="window.Navegacao.irParaAba('previsao')" id="nav-previsao" class="nav-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 whitespace-nowrap transition-colors">
             📈 Previsão de Demanda
@@ -134,7 +134,7 @@
             <span class="text-xs uppercase font-bold tracking-widest text-emerald-400">Da Gestão Reativa à Preditiva</span>
             <h2 class="text-xl sm:text-2xl font-black">Previsão Inteligente de Demanda para Supermercados</h2>
             <p class="text-sm text-slate-300 max-w-2xl">
-              Transforme históricos de vendas em decisões assertivas de reposição antes que rupturas ou desperdícios ocorram.
+              Antecipamos picos sazonais e rupturas antes que ocorram prejuízos ou perda de clientes.
             </p>
           </div>
           <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/15 text-center min-w-[180px]">
@@ -182,6 +182,49 @@
           </div>
         </div>
 
+        <!-- Diagrama Visual do Fluxo do Sistema (Slide 6 e Seção 12 do Relatório) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm">Fluxo Operacional de Inteligência Preditiva</h3>
+              <p class="text-[11px] text-slate-500">Pipeline de dados: da ingestão bruta à decisão do gestor</p>
+            </div>
+            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded font-mono">SEÇÃO 12 - ARQUITETURA</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-center text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-lg block mb-1">📥</span>
+              <p class="font-bold text-slate-800">1. Histórico</p>
+              <p class="text-[10px] text-slate-500">Vendas de caixa</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-lg block mb-1">🗄️</span>
+              <p class="font-bold text-slate-800">2. Banco</p>
+              <p class="text-[10px] text-slate-500">SQLAlchemy Relacional</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span class="text-lg block mb-1">🧹</span>
+              <p class="font-bold text-slate-800">3. Tratamento</p>
+              <p class="text-[10px] text-slate-500">Data Cleaner & Imputação</p>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-300">
+              <span class="text-lg block mb-1">🧠</span>
+              <p class="font-bold text-emerald-800">4. Previsão</p>
+              <p class="text-[10px] text-emerald-700">Séries & Sazonalidade</p>
+            </div>
+            <div class="p-3 rounded-xl bg-blue-50 border border-blue-300">
+              <span class="text-lg block mb-1">📊</span>
+              <p class="font-bold text-blue-800">5. Dashboard</p>
+              <p class="text-[10px] text-blue-700">Gráficos & Alertas</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900 text-white">
+              <span class="text-lg block mb-1">🎯</span>
+              <p class="font-bold text-emerald-400">6. Decisão</p>
+              <p class="text-[10px] text-slate-300">Gestor do Mercado</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Gráficos Principais -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
@@ -208,12 +251,39 @@
           </div>
         </div>
 
+        <!-- Seção Dupla: Top Produtos em Alta e Alertas Urgentes -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <span class="text-emerald-600">📈</span> Top 5 Produtos com Maior Giro Projetado
+              </h3>
+              <button onclick="window.Navegacao.irParaAba('previsao')" class="text-xs text-emerald-600 hover:underline">Simular →</button>
+            </div>
+            <div id="lista-produtos-alta" class="space-y-2">
+              <!-- Preenchido via dashboard.js -->
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <span class="text-red-500">🚨</span> Top 5 Produtos em Risco Iminente de Ruptura
+              </h3>
+              <button onclick="window.Navegacao.irParaAba('alertas')" class="text-xs text-red-600 hover:underline">Resolver Todos →</button>
+            </div>
+            <div id="lista-alertas-urgentes" class="space-y-2">
+              <!-- Preenchido via dashboard.js -->
+            </div>
+          </div>
+        </div>
+
         <!-- Widget de Alertas Críticos no Dashboard -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h3 class="font-bold text-slate-800 text-base">Alertas Urgentes de Gestão de Estoque</h3>
-              <p class="text-xs text-slate-500">Produtos com risco imediato de falta na gôndola ou estoque ocioso</p>
+              <h3 class="font-bold text-slate-800 text-base">Painel Rápido de Ações de Reposição</h3>
+              <p class="text-xs text-slate-500">Recomendações automatizadas emitidas pelo motor preditivo</p>
             </div>
             <button onclick="window.Navegacao.irParaAba('alertas')" class="text-xs text-emerald-700 hover:text-emerald-800 font-semibold bg-emerald-50 px-3 py-1.5 rounded-lg">
               Ver Todos os Alertas →
@@ -238,7 +308,7 @@
             <select id="filtro-produto-status" class="px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
               <option value="">Todos os Status</option>
               <option value="RUPTURA">Ruptura (Crítico)</option>
-              <option value="ATENCAO">Atenção (Baixo)</option>
+              <option value="ATENCAO">Atenção (Ponto Pedido)</option>
               <option value="EXCESSO">Excesso</option>
               <option value="EQUILIBRADO">Equilibrado</option>
             </select>
@@ -258,7 +328,8 @@
                   <th class="py-3 px-4">Categoria</th>
                   <th class="py-3 px-4">Preço Base</th>
                   <th class="py-3 px-4">Estoque Atual</th>
-                  <th class="py-3 px-4">Estoque Mínimo</th>
+                  <th class="py-3 px-4">Estoque Mínimo / Ponto Pedido</th>
+                  <th class="py-3 px-4">Lead Time</th>
                   <th class="py-3 px-4">Status</th>
                   <th class="py-3 px-4 text-right">Ações</th>
                 </tr>
@@ -271,7 +342,93 @@
         </div>
       </section>
 
-      <!-- ================= ABA 3: PREVISÃO DE DEMANDA ================= -->
+      <!-- ================= ABA 3: VENDAS & INGESTÃO CSV ================= -->
+      <section id="aba-vendas" class="tab-content space-y-6">
+        <!-- Barra de Ingestão e Ações Rápidas -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">Histórico e Ingestão de Vendas de Supermercado</h3>
+            <p class="text-xs text-slate-500">
+              Cadastre vendas operacionais ou faça importação em lote via arquivo CSV tratado automaticamente.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="window.Vendas.baixarTemplateCSV()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors flex items-center gap-1.5">
+              📥 Baixar Modelo CSV
+            </button>
+
+            <label class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg shadow-sm cursor-pointer transition-colors flex items-center gap-2">
+              <span>📤 Importar CSV</span>
+              <input type="file" id="input-upload-csv" accept=".csv" class="hidden">
+            </label>
+
+            <button onclick="window.Vendas.abrirModalNovaVenda()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-colors flex items-center gap-2">
+              <span>+</span> Registrar Venda
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros do Histórico de Vendas -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-3">
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Produto:</label>
+            <select id="filtro-venda-produto" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <option value="">Todos os Produtos</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Data Início:</label>
+            <input type="date" id="filtro-venda-inicio" class="px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Data Fim:</label>
+            <input type="date" id="filtro-venda-fim" class="px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Tipo de Preço:</label>
+            <select id="filtro-venda-promocao" class="px-3 py-2 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 outline-none">
+              <option value="">Todos</option>
+              <option value="1">Apenas Promoções</option>
+              <option value="0">Preço Normal</option>
+            </select>
+          </div>
+
+          <div class="pt-5">
+            <button id="btn-filtrar-vendas" class="px-4 py-2 bg-slate-800 text-white font-semibold text-xs rounded-lg hover:bg-slate-900 transition-colors">
+              Filtrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabela de Histórico de Vendas -->
+        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase border-b border-slate-200">
+                  <th class="py-3 px-4">ID</th>
+                  <th class="py-3 px-4">Produto</th>
+                  <th class="py-3 px-4">Categoria</th>
+                  <th class="py-3 px-4">Data da Venda</th>
+                  <th class="py-3 px-4">Quantidade</th>
+                  <th class="py-3 px-4">Preço Unitário</th>
+                  <th class="py-3 px-4">Condição</th>
+                  <th class="py-3 px-4 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-vendas-corpo">
+                <!-- Preenchido via vendas.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ABA 4: PREVISÃO DE DEMANDA ================= -->
       <section id="aba-previsao" class="tab-content space-y-6">
         <!-- Controles de Simulação Preditiva -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
@@ -297,9 +454,12 @@
               <label for="previsao-check-promocao" class="text-xs font-semibold text-slate-700 cursor-pointer">Simular Promoção (-15%)</label>
             </div>
 
-            <div class="pt-4">
+            <div class="flex items-center gap-2 pt-4">
+              <button id="btn-exportar-previsao-csv" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors" title="Exportar Previsão para Fornecedor">
+                📥 Exportar CSV
+              </button>
               <button id="btn-gerar-previsao" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition-all">
-                💾 Salvar Previsão no Banco
+                💾 Salvar Previsão
               </button>
             </div>
           </div>
@@ -327,7 +487,7 @@
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
             <span class="text-[11px] font-bold text-slate-400 uppercase block">Sugestão de Reposição</span>
             <p id="prev-resumo-sugestao" class="text-2xl font-black text-emerald-600 mt-1">--</p>
-            <span class="text-[10px] text-slate-500">Quantidade a comprar</span>
+            <span class="text-[10px] text-slate-500">Quantidade recomendada</span>
           </div>
 
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -348,6 +508,41 @@
           </div>
           <div class="h-80 w-full">
             <canvas id="chart-previsao-detalhado"></canvas>
+          </div>
+        </div>
+
+        <!-- Painel de Decomposição Explicável de Variáveis (Seção 16 do Relatório) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="border-b border-slate-100 pb-2">
+            <span class="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">Inteligência Explicável (XAI)</span>
+            <h4 class="font-bold text-sm text-slate-800">Decomposição das Variáveis Analisadas (Seção 16)</h4>
+            <p class="text-xs text-slate-500">Como cada dimensão histórica influenciou a projeção final da demanda</p>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block font-semibold">Giro Base</span>
+              <p id="dec-demanda-base" class="font-bold text-slate-800 text-sm mt-1">--</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block font-semibold">Dia da Semana</span>
+              <p id="dec-fator-semana" class="font-bold text-slate-800 text-sm mt-1">--</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <span class="text-slate-400 block font-semibold">Ciclo do Mês</span>
+              <p id="dec-fator-ciclo" class="font-bold text-slate-800 text-sm mt-1">--</p>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+              <span class="text-emerald-700 block font-semibold">Fator Festivo</span>
+              <p id="dec-fator-sazonal" class="font-bold text-emerald-800 text-sm mt-1">--</p>
+            </div>
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-100">
+              <span class="text-amber-700 block font-semibold">Elasticidade Promo</span>
+              <p id="dec-fator-promo" class="font-bold text-amber-800 text-sm mt-1">--</p>
+            </div>
+            <div class="p-3 rounded-xl bg-blue-50 border border-blue-100">
+              <span class="text-blue-700 block font-semibold">Ponto de Pedido</span>
+              <p id="dec-ponto-pedido" class="font-bold text-blue-800 text-sm mt-1">--</p>
+            </div>
           </div>
         </div>
 
@@ -381,7 +576,7 @@
         </div>
       </section>
 
-      <!-- ================= ABA 4: SAZONALIDADE ================= -->
+      <!-- ================= ABA 5: SAZONALIDADE ================= -->
       <section id="aba-sazonalidade" class="tab-content space-y-6">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <h3 class="font-bold text-slate-800 text-base mb-1">Mapeamento de Sazonalidades e Datas Comemorativas</h3>
@@ -393,17 +588,31 @@
           </div>
         </div>
 
-        <!-- Detalhe do Evento Selecionado -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <!-- Detalhe do Evento e Gráfico Anual de Índices -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
               <span class="text-xs font-bold text-emerald-600 uppercase" id="sazonal-periodo">--</span>
               <h3 class="text-xl font-extrabold text-slate-900" id="sazonal-nome">--</h3>
               <p class="text-xs text-slate-500 mt-1" id="sazonal-descricao">--</p>
             </div>
-            <div class="bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl text-center">
-              <span class="text-xs font-semibold text-emerald-800 block">Pico Médio Histórico</span>
-              <span class="text-lg font-black text-emerald-700" id="sazonal-multiplicador">--</span>
+            <div class="flex items-center gap-3">
+              <div class="bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl text-center">
+                <span class="text-xs font-semibold text-emerald-800 block">Pico Médio</span>
+                <span class="text-lg font-black text-emerald-700" id="sazonal-multiplicador">--</span>
+              </div>
+              <div class="bg-red-50 border border-red-200 px-4 py-2 rounded-xl text-center">
+                <span class="text-xs font-semibold text-red-800 block">Receita em Risco (Falta)</span>
+                <span class="text-lg font-black text-red-700" id="sazonal-impacto-financeiro">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráfico de Curva Anual do Evento -->
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-700 uppercase mb-2">Comportamento de Vendas ao Longo dos 12 Meses (Índice Base 1.0)</h4>
+            <div class="h-44 w-full">
+              <canvas id="chart-sazonalidade-anual"></canvas>
             </div>
           </div>
 
@@ -430,7 +639,7 @@
         </div>
       </section>
 
-      <!-- ================= ABA 5: ALERTAS & RUPTURAS ================= -->
+      <!-- ================= ABA 6: ALERTAS & RUPTURAS ================= -->
       <section id="aba-alertas" class="tab-content space-y-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -454,6 +663,7 @@
                   <th class="py-3 px-4">Estoque Atual</th>
                   <th class="py-3 px-4">Demanda Prevista</th>
                   <th class="py-3 px-4">Cobertura Estimada</th>
+                  <th class="py-3 px-4">Impacto Financeiro (R$)</th>
                   <th class="py-3 px-4">Classificação de Risco</th>
                   <th class="py-3 px-4 text-right">Ação Sugerida</th>
                 </tr>
@@ -532,11 +742,114 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: EDITAR PRODUTO ================= -->
+  <div id="modal-editar-produto" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-base font-bold text-slate-900">Editar Parâmetros do Produto</h3>
+        <button onclick="window.Produtos.fecharModalEdicao()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <form id="form-editar-produto" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nome do Produto</label>
+          <input type="text" id="edit-prod-nome" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Categoria</label>
+          <select id="edit-prod-categoria" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Preço Base (R$)</label>
+            <input type="number" step="0.01" id="edit-prod-preco" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Estoque Atual</label>
+            <input type="number" id="edit-prod-estoque" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Estoque Mínimo</label>
+            <input type="number" id="edit-prod-estoque-min" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Lead Time (dias)</label>
+            <input type="number" id="edit-prod-leadtime" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="window.Produtos.fecharModalEdicao()" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg hover:bg-slate-200">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: REGISTRAR VENDA ================= -->
+  <div id="modal-nova-venda" class="modal-overlay">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 border border-slate-100">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-base font-bold text-slate-900">Registrar Venda de Supermercado</h3>
+        <button onclick="window.Vendas.fecharModalNovaVenda()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <form id="form-nova-venda" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Produto Vendido</label>
+          <select id="nova-venda-produto" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Data da Venda</label>
+            <input type="date" id="nova-venda-data" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Quantidade</label>
+            <input type="number" id="nova-venda-quantidade" required min="1" value="1" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Preço Praticado (R$)</label>
+          <input type="number" step="0.01" id="nova-venda-preco" required placeholder="14.90" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="nova-venda-promocao" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
+          <label for="nova-venda-promocao" class="text-xs font-semibold text-slate-700 cursor-pointer">Venda em Condição Promocional</label>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="window.Vendas.fecharModalNovaVenda()" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold text-xs rounded-lg hover:bg-slate-200">
+            Cancelar
+          </button>
+          <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm">
+            Confirmar Venda
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts da Aplicação -->
   <script src="/static/js/api.js"></script>
   <script src="/static/js/auth.js"></script>
   <script src="/static/js/dashboard.js"></script>
   <script src="/static/js/produtos.js"></script>
+  <script src="/static/js/vendas.js"></script>
   <script src="/static/js/previsao.js"></script>
   <script src="/static/js/sazonalidade.js"></script>
   <script src="/static/js/alertas.js"></script>
@@ -567,6 +880,7 @@
         // Dispara o carregamento sob demanda
         if (abaId === 'dashboard' && window.Dashboard) window.Dashboard.carregar();
         if (abaId === 'produtos' && window.Produtos) window.Produtos.carregar();
+        if (abaId === 'vendas' && window.Vendas) window.Vendas.carregar();
         if (abaId === 'previsao' && window.Previsao) window.Previsao.carregar();
         if (abaId === 'sazonalidade' && window.Sazonalidade) window.Sazonalidade.carregar();
         if (abaId === 'alertas' && window.Alertas) window.Alertas.carregar();
@@ -578,15 +892,14 @@
         }
         try {
           await Api.post('/seed/popular?force=true');
-          alert('Base de demonstração recarregada com sucesso!');
+          window.Toast.mostrar('Base de demonstração recarregada com sucesso!');
           this.irParaAba(this.abaAtual);
         } catch (err) {
-          alert('Erro ao resetar: ' + err.message);
+          window.Toast.mostrar('Erro ao resetar: ' + err.message, 'erro');
         }
       }
     };
 
-    // Inicialização ao carregar a página
     document.addEventListener('DOMContentLoaded', () => {
       Auth.init();
     });

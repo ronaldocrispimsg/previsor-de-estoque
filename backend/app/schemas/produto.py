@@ -29,9 +29,16 @@ class ProdutoUpdate(BaseModel):
     lead_time_dias: Optional[int] = Field(None, ge=1)
 
 
+class ProdutoAjusteEstoque(BaseModel):
+    quantidade: int = Field(..., description="Quantidade a somar (positiva) ou abater (negativa)")
+    motivo: str = Field("Entrada de Mercadoria", description="Motivo do ajuste")
+
+
 class ProdutoResponse(ProdutoBase):
     id_produto: int
     status_estoque: Optional[str] = "EQUILIBRADO"  # "RUPTURA", "ATENCAO", "EXCESSO", "EQUILIBRADO"
+    ponto_de_pedido: Optional[float] = None
+    giro_diario_estimado: Optional[float] = None
 
     model_config = ConfigDict(from_attributes=True)
 

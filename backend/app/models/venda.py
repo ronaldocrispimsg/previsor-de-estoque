@@ -23,3 +23,4 @@ class Venda(Base):
 
     def __repr__(self):
         return f"<Venda(id={self.id_venda}, prod_id={self.id_produto}, data={self.data}, qtd={self.quantidade})>"
+

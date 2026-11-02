@@ -32,3 +32,4 @@ def status_banco(db: Session = Depends(get_db)):
         "total_previsoes": db.query(Previsao).count(),
         "total_usuarios": db.query(Usuario).count(),
     }
+

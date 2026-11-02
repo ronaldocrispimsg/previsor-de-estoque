@@ -23,10 +23,21 @@ class PrevisaoPonto(BaseModel):
 
 
 class MetricasQualidade(BaseModel):
-    mae: float = Field(..., description="Mean Absolute Error")
-    rmse: float = Field(..., description="Root Mean Squared Error")
-    mape: float = Field(..., description="Mean Absolute Percentage Error (%)")
+    mae: float = Field(..., description="Mean Absolute Error (Erro Médio Absoluto)")
+    rmse: float = Field(..., description="Root Mean Squared Error (Raiz do Erro Quadrático Médio)")
+    mape: float = Field(..., description="Mean Absolute Percentage Error (Erro Percentual Absoluto Médio)")
     acuracia_estimada: float = Field(..., description="Acurácia percentual (100 - MAPE)")
+
+
+class DecomposicaoFatores(BaseModel):
+    demanda_base_diaria: float = Field(..., description="Giro médio diário base do produto")
+    fator_dia_semana_medio: float = Field(..., description="Multiplicador médio por dias de maior fluxo (fins de semana)")
+    fator_ciclo_mes: float = Field(..., description="Multiplicador do ciclo quinzenal / quinto dia útil")
+    fator_sazonal_festivo: float = Field(..., description="Impacto multiplicativo da data festiva ativa")
+    fator_promocional: float = Field(..., description="Impacto de elasticidade em preço promocional")
+    ponto_de_pedido: float = Field(..., description="Nível de estoque que dispara ordem de compra")
+    lead_time_dias: int = Field(..., description="Prazo de entrega do fornecedor em dias")
+    estoque_seguranca: int = Field(..., description="Margem de segurança para evitar ruptura")
 
 
 class PrevisaoResponse(BaseModel):
@@ -52,4 +63,5 @@ class PrevisaoResponse(BaseModel):
 class PrevisaoDetalhadaResponse(BaseModel):
     resumo: PrevisaoResponse
     metricas: MetricasQualidade
+    decomposicao: DecomposicaoFatores
     serie_temporal: List[PrevisaoPonto]
