@@ -39,7 +39,7 @@ previsor-de-estoque/
 
 ---
 
-## 2. Modelo de Dados Relacional e Variáveis Analisadas (Seção 13 e 16)
+## 2. Modelo de Dados Relacional e Variáveis Analisadas
 
 - **`PRODUTO (1) -> (N) VENDA`**: `id_produto`, `nome`, `categoria`, `preco_base`, `estoque_atual`, `estoque_minimo`, `lead_time_dias`.
 - **`PRODUTO (1) -> (N) PREVISÃO`**: `id_previsao`, `id_produto`, `periodo`, `horizonte_dias`, `demanda_prevista`, `confianca`, `sugestao_reposicao`, `status_risco`.
@@ -54,7 +54,7 @@ previsor-de-estoque/
 
 ---
 
-## 3. Telas do Protótipo (Seção 15 do Relatório)
+## 3. Telas do Protótipo
 
 1. **Login**: Autenticação com credenciais padrão (`admin@admin.com` / `admin`).
 2. **Inicio**: Cards de KPIs (Giro 30d, Acurácia média, Alertas de ruptura/excesso, Redução de perdas), gráfico de vendas históricas vs projeção, distribuição por categoria, rankings de Top 5 produtos e resumo de ações imediatas de reposição.
