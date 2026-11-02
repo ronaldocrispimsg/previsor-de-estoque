@@ -1,6 +1,6 @@
 /**
  * frontend/js/previsao.js
- * Módulo de Inteligência Preditiva e visualização gráfica de previsões (Predikta).
+ * Módulo de Inteligência Preditiva e visualização gráfica de previsões.
  */
 
 window.Previsao = {
@@ -29,8 +29,13 @@ window.Previsao = {
     const select = document.getElementById('previsao-select-produto');
     if (!select) return;
 
+    if (!resp.produtos || resp.produtos.length === 0) {
+      select.innerHTML = '<option value="">Nenhum produto cadastrado no banco</option>';
+      return;
+    }
+
     select.innerHTML = resp.produtos.map(p => `
-      <option value="${p.id_produto}">${p.nome} (${p.categoria}) - Est: ${p.estoque_atual} un</option>
+      <option value="${p.id_produto}">${p.nome} (${p.categoria}) - Saldo: ${p.estoque_atual} un</option>
     `).join('');
   },
 
@@ -50,10 +55,10 @@ window.Previsao = {
 
     botoesHorizonte.forEach(btn => {
       btn.addEventListener('click', () => {
-        botoesHorizonte.forEach(b => b.classList.remove('bg-emerald-600', 'text-white'));
+        botoesHorizonte.forEach(b => b.classList.remove('bg-emerald-700', 'text-white'));
         botoesHorizonte.forEach(b => b.classList.add('bg-slate-100', 'text-slate-700'));
         btn.classList.remove('bg-slate-100', 'text-slate-700');
-        btn.classList.add('bg-emerald-600', 'text-white');
+        btn.classList.add('bg-emerald-700', 'text-white');
         this.executarPrevisao();
       });
     });
@@ -77,7 +82,7 @@ window.Previsao = {
   },
 
   getHorizonteSelecionado() {
-    const btnAtivo = document.querySelector('.btn-horizonte.bg-emerald-600');
+    const btnAtivo = document.querySelector('.btn-horizonte.bg-emerald-700');
     return btnAtivo ? parseInt(btnAtivo.dataset.dias, 10) : 15;
   },
 
@@ -100,7 +105,7 @@ window.Previsao = {
           horizonte_dias: horizonteDias,
           considerar_promocao: considerarPromocao
         });
-        window.Toast.mostrar('Previsão gerada e registrada no histórico do banco com sucesso!', 'sucesso');
+        window.Toast.mostrar('Previsão gerada e registrada no histórico do banco.', 'sucesso');
       } else {
         dados = await Api.get(`/previsoes/${idProduto}`, {
           horizonte_dias: horizonteDias,
@@ -146,13 +151,11 @@ window.Previsao = {
     document.getElementById('prev-resumo-sazonalidade').textContent = r.impacto_sazonal_identificado ?
       `${r.impacto_sazonal_identificado} (x${r.multiplicador_sazonal})` : 'Padrão Regular (x1.0)';
 
-    // Métricas científicas de qualidade
     document.getElementById('prev-metric-acuracia').textContent = `${m.acuracia_estimada}%`;
     document.getElementById('prev-metric-mae').textContent = `${m.mae} un`;
     document.getElementById('prev-metric-rmse').textContent = `${m.rmse} un`;
     document.getElementById('prev-metric-mape').textContent = `${m.mape}%`;
 
-    // Decomposição explicável das variáveis
     if (dec) {
       document.getElementById('dec-demanda-base').textContent = `${dec.demanda_base_diaria} un/dia`;
       document.getElementById('dec-fator-semana').textContent = `x${dec.fator_dia_semana_medio}`;
@@ -188,24 +191,24 @@ window.Previsao = {
         labels,
         datasets: [
           {
-            label: 'Vendas Reais Observadas',
+            label: 'Vendas Observadas',
             data: realData,
-            borderColor: '#059669',
-            backgroundColor: 'rgba(5, 150, 105, 0.15)',
+            borderColor: '#0f766e',
+            backgroundColor: 'rgba(15, 118, 110, 0.12)',
             borderWidth: 2,
-            pointRadius: 3,
-            tension: 0.3
+            pointRadius: 2.5,
+            tension: 0.25
           },
           {
-            label: 'Demanda Prevista (Predikta)',
+            label: 'Demanda Prevista',
             data: previstoData,
             borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.12)',
-            borderWidth: 2.5,
-            borderDash: [5, 5],
-            pointRadius: 4,
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            borderWidth: 2,
+            borderDash: [5, 4],
+            pointRadius: 3,
             pointBackgroundColor: '#2563eb',
-            tension: 0.3
+            tension: 0.25
           },
           {
             label: 'Limite Superior (95%)',
@@ -231,12 +234,12 @@ window.Previsao = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } },
-          tooltip: { cornerRadius: 8, padding: 10 }
+          legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 12 } },
+          tooltip: { cornerRadius: 4, padding: 8 }
         },
         scales: {
-          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-          x: { grid: { display: false } }
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Inter', size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } }
         }
       }
     });
@@ -273,6 +276,6 @@ window.Previsao = {
     document.body.appendChild(link);
     link.click();
     link.remove();
-    window.Toast.mostrar('Previsão exportada com sucesso em CSV!');
+    window.Toast.mostrar('Previsão exportada com sucesso em CSV.');
   }
 };

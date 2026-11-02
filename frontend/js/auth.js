@@ -11,26 +11,26 @@ const Auth = {
 
     if (btnPreencherDemo) {
       btnPreencherDemo.addEventListener('click', () => {
-        document.getElementById('login-email').value = 'gestor@supermercado.com';
-        document.getElementById('login-senha').value = 'admin123';
+        document.getElementById('login-email').value = 'admin@admin.com';
+        document.getElementById('login-senha').value = 'admin';
       });
     }
 
     if (loginForm) {
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const senha = document.getElementById('login-senha').value;
+        const email = document.getElementById('login-email').value.trim();
+        const senha = document.getElementById('login-senha').value.trim();
         const errorAlert = document.getElementById('login-error');
 
         try {
           errorAlert.classList.add('hidden');
           const resp = await Api.post('/auth/login', { email, senha });
-          localStorage.setItem('predikta_token', resp.token);
-          localStorage.setItem('predikta_user', JSON.stringify(resp));
+          localStorage.setItem('previsor_token', resp.token);
+          localStorage.setItem('previsor_user', JSON.stringify(resp));
           this.mostrarApp();
         } catch (err) {
-          errorAlert.textContent = err.message || 'Falha no login';
+          errorAlert.textContent = err.message || 'Falha na autenticação';
           errorAlert.classList.remove('hidden');
         }
       });
@@ -38,14 +38,13 @@ const Auth = {
 
     if (btnLogout) {
       btnLogout.addEventListener('click', () => {
-        localStorage.removeItem('predikta_token');
-        localStorage.removeItem('predikta_user');
+        localStorage.removeItem('previsor_token');
+        localStorage.removeItem('previsor_user');
         this.mostrarLogin();
       });
     }
 
-    // Checa sessão existente
-    if (localStorage.getItem('predikta_token')) {
+    if (localStorage.getItem('previsor_token')) {
       this.mostrarApp();
     } else {
       this.mostrarLogin();
@@ -56,16 +55,15 @@ const Auth = {
     document.getElementById('tela-login').classList.add('hidden');
     document.getElementById('app-principal').classList.remove('hidden');
 
-    const userRaw = localStorage.getItem('predikta_user');
+    const userRaw = localStorage.getItem('previsor_user');
     if (userRaw) {
       try {
         const u = JSON.parse(userRaw);
-        document.getElementById('user-nome-topo').textContent = u.nome;
-        document.getElementById('user-cargo-topo').textContent = u.cargo;
+        document.getElementById('user-nome-topo').textContent = u.nome || 'admin';
+        document.getElementById('user-cargo-topo').textContent = u.cargo || 'Administrador de Estoque';
       } catch (e) {}
     }
 
-    // Carrega o dashboard inicial
     if (window.Dashboard) {
       window.Dashboard.carregar();
     }
@@ -76,4 +74,3 @@ const Auth = {
     document.getElementById('app-principal').classList.add('hidden');
   }
 };
-

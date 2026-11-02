@@ -1,6 +1,6 @@
 /**
  * frontend/js/vendas.js
- * Módulo de Histórico e Ingestão de Vendas (Predikta).
+ * Módulo de Histórico e Ingestão de Vendas.
  */
 
 window.Vendas = {
@@ -36,7 +36,7 @@ window.Vendas = {
     const promo = document.getElementById('filtro-venda-promocao')?.value || '';
 
     const tbody = document.getElementById('tabela-vendas-corpo');
-    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Carregando registros de vendas...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Carregando registros de vendas...</td></tr>`;
 
     try {
       const params = { limite: 100 };
@@ -48,7 +48,7 @@ window.Vendas = {
       const vendas = await Api.get('/vendas', params);
 
       if (!vendas || vendas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-500">Nenhum registro de venda encontrado com os filtros selecionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500">Nenhum registro de venda encontrado com os filtros selecionados.</td></tr>`;
         return;
       }
 
@@ -56,30 +56,29 @@ window.Vendas = {
       vendas.forEach(v => {
         const partesData = v.data.split('-');
         const dataFmt = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
-        const total = (v.quantidade * v.preco).toFixed(2);
 
         const tr = document.createElement('tr');
-        tr.className = 'border-b border-slate-100 hover:bg-slate-50 text-sm transition-colors';
+        tr.className = 'border-b border-slate-100 hover:bg-slate-50 text-xs transition-colors';
         tr.innerHTML = `
-          <td class="py-3 px-4 font-mono text-xs text-slate-400">#${v.id_venda}</td>
-          <td class="py-3 px-4 font-medium text-slate-900">${v.nome_produto}</td>
-          <td class="py-3 px-4 text-xs text-slate-500">${v.categoria_produto}</td>
+          <td class="py-3 px-4 font-mono text-slate-400">#${v.id_venda}</td>
+          <td class="py-3 px-4 font-semibold text-slate-900">${v.nome_produto}</td>
+          <td class="py-3 px-4 text-slate-500">${v.categoria_produto}</td>
           <td class="py-3 px-4 text-slate-600">${dataFmt}</td>
           <td class="py-3 px-4 font-bold text-slate-800">${v.quantidade} un</td>
           <td class="py-3 px-4 font-semibold text-slate-700">R$ ${v.preco.toFixed(2)}</td>
           <td class="py-3 px-4">
-            ${v.promocao ? '<span class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded text-xs font-semibold">Sim (Promoção)</span>' : '<span class="text-slate-400 text-xs">Padrão</span>'}
+            ${v.promocao ? '<span class="px-2 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 rounded font-semibold text-[10px]">Promocional</span>' : '<span class="text-slate-500 text-[11px]">Regular</span>'}
           </td>
           <td class="py-3 px-4 text-right">
-            <button onclick="window.Vendas.excluirVenda(${v.id_venda})" class="text-slate-400 hover:text-red-600 text-xs p-1" title="Excluir Registro">
-              🗑️
+            <button onclick="window.Vendas.excluirVenda(${v.id_venda})" class="text-rose-700 hover:text-rose-900 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2 py-1 rounded text-xs transition-colors">
+              Excluir
             </button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-red-500">Erro: ${err.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-700">Erro: ${err.message}</td></tr>`;
     }
   },
 
@@ -101,7 +100,7 @@ window.Vendas = {
 
         try {
           await Api.post('/vendas', { id_produto, data, quantidade, preco, promocao });
-          window.Toast.mostrar(`Venda registrada com sucesso! Estoque do produto atualizado.`);
+          window.Toast.mostrar('Venda registrada com sucesso. Estoque atualizado.');
           this.fecharModalNovaVenda();
           formVenda.reset();
           await this.carregarTabela();
@@ -123,11 +122,11 @@ window.Vendas = {
         formData.append('arquivo', file);
 
         try {
-          window.Toast.mostrar('Processando e higienizando dados do arquivo CSV...', 'info');
+          window.Toast.mostrar('Processando e higienizando arquivo CSV...', 'info');
           const resp = await Api.upload('/vendas/upload-csv', formData);
 
           window.Toast.mostrar(
-            `Importação concluída! ${resp.linhas_inseridas} vendas inseridas. (${resp.linhas_descartadas} descartadas por inconsistência).`,
+            `Importação finalizada. ${resp.linhas_inseridas} registros inseridos. (${resp.linhas_descartadas} descartados).`,
             'sucesso'
           );
           inputCsv.value = '';
@@ -135,7 +134,7 @@ window.Vendas = {
           if (window.Dashboard) window.Dashboard.carregar();
           if (window.Produtos) window.Produtos.carregarTabela();
         } catch (err) {
-          window.Toast.mostrar('Erro no processamento do CSV: ' + err.message, 'erro');
+          window.Toast.mostrar('Falha no processamento: ' + err.message, 'erro');
           inputCsv.value = '';
         }
       });
@@ -159,7 +158,7 @@ window.Vendas = {
   },
 
   async excluirVenda(idVenda) {
-    if (!confirm('Deseja realmente excluir este registro de venda?')) return;
+    if (!confirm('Deseja excluir este registro de venda?')) return;
     try {
       await Api.delete(`/vendas/${idVenda}`);
       window.Toast.mostrar('Registro de venda removido.');

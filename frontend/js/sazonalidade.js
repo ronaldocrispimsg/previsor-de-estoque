@@ -1,6 +1,6 @@
 /**
  * frontend/js/sazonalidade.js
- * Módulo de Análise de Sazonalidade e Padrões Festivos (Predikta).
+ * Módulo de Análise de Sazonalidade e Padrões Festivos do Varejo.
  */
 
 window.Sazonalidade = {
@@ -24,18 +24,15 @@ window.Sazonalidade = {
     if (!container) return;
 
     container.innerHTML = this.eventosCache.map((ev, idx) => {
-      let icon = '🍫';
-      if (ev.id_evento === 'festa_junina') icon = '🌽';
-      if (ev.id_evento === 'verao') icon = '☀️';
-      if (ev.id_evento === 'natal') icon = '🎄';
-
       return `
-        <button onclick="window.Sazonalidade.selecionarEvento('${ev.id_evento}')" id="btn-ev-${ev.id_evento}" class="btn-evento-sazonal flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-emerald-500 hover:shadow-sm transition-all text-left w-full ${idx === 0 ? 'border-emerald-600 ring-2 ring-emerald-100 bg-emerald-50/30' : ''}">
-          <span class="text-2xl">${icon}</span>
+        <button onclick="window.Sazonalidade.selecionarEvento('${ev.id_evento}')" id="btn-ev-${ev.id_evento}" class="btn-evento-sazonal flex items-center justify-between p-3.5 rounded border border-slate-200 bg-white hover:border-slate-400 hover:shadow-sm transition-all text-left w-full ${idx === 0 ? 'border-emerald-700 ring-1 ring-emerald-700 bg-emerald-50/20' : ''}">
           <div>
-            <h4 class="font-bold text-slate-800 text-sm">${ev.nome}</h4>
-            <p class="text-xs text-slate-500">${ev.periodo} • Multiplicador: <strong class="text-emerald-700 font-semibold">+${round((ev.multiplicador_medio - 1)*100)}%</strong></p>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${ev.periodo}</span>
+            <h4 class="font-bold text-slate-900 text-xs mt-0.5">${ev.nome}</h4>
           </div>
+          <span class="text-xs font-bold text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded">
+            +${round((ev.multiplicador_medio - 1)*100)}%
+          </span>
         </button>
       `;
     }).join('');
@@ -46,11 +43,11 @@ window.Sazonalidade = {
     if (!evento) return;
 
     document.querySelectorAll('.btn-evento-sazonal').forEach(b => {
-      b.classList.remove('border-emerald-600', 'ring-2', 'ring-emerald-100', 'bg-emerald-50/30');
+      b.classList.remove('border-emerald-700', 'ring-1', 'ring-emerald-700', 'bg-emerald-50/20');
     });
     const btnAtivo = document.getElementById(`btn-ev-${idEvento}`);
     if (btnAtivo) {
-      btnAtivo.classList.add('border-emerald-600', 'ring-2', 'ring-emerald-100', 'bg-emerald-50/30');
+      btnAtivo.classList.add('border-emerald-700', 'ring-1', 'ring-emerald-700', 'bg-emerald-50/20');
     }
 
     document.getElementById('sazonal-nome').textContent = evento.nome;
@@ -78,17 +75,17 @@ window.Sazonalidade = {
       const badgeCls = isRisco ? 'badge-ruptura' : 'badge-equilibrado';
 
       return `
-        <tr class="border-b border-slate-100 hover:bg-slate-50 text-sm">
+        <tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
           <td class="py-3 px-4 font-semibold text-slate-800">${p.nome}</td>
-          <td class="py-3 px-4 text-slate-500 text-xs">${p.categoria}</td>
+          <td class="py-3 px-4 text-slate-500 text-[11px]">${p.categoria}</td>
           <td class="py-3 px-4 text-slate-600 font-medium">${p.demanda_normal_30d} un</td>
-          <td class="py-3 px-4 text-emerald-700 font-bold">${p.demanda_pico_sazonal_30d} un (+${p.salto_demanda_pct}%)</td>
+          <td class="py-3 px-4 text-emerald-800 font-bold">${p.demanda_pico_sazonal_30d} un (+${p.salto_demanda_pct}%)</td>
           <td class="py-3 px-4 font-semibold text-slate-800">${p.estoque_atual} un</td>
           <td class="py-3 px-4"><span class="${badgeCls}">${p.risco_sem_previsao}</span></td>
           <td class="py-3 px-4 text-right">
             ${p.compra_recomendada > 0 ? `
-              <button onclick="window.Alertas.reporEstoque(${p.id_produto}, ${p.compra_recomendada})" class="text-xs bg-emerald-600 text-white hover:bg-emerald-700 px-3 py-1.5 rounded-lg font-semibold shadow-sm transition-all">
-                Antecipar +${p.compra_recomendada} un
+              <button onclick="window.Alertas.reporEstoque(${p.id_produto}, ${p.compra_recomendada})" class="text-xs bg-emerald-700 text-white hover:bg-emerald-800 px-3 py-1.5 rounded font-semibold transition-all">
+                Repor +${p.compra_recomendada} un
               </button>
             ` : '<span class="text-xs text-slate-400">Estoque Suficiente</span>'}
           </td>
@@ -104,7 +101,7 @@ window.Sazonalidade = {
     const ctx = canvas.getContext('2d');
     const labels = evento.curva_anual_indices.map(m => m.mes_nome);
     const valores = evento.curva_anual_indices.map(m => m.indice);
-    const cores = evento.curva_anual_indices.map(m => m.destaque ? '#059669' : '#cbd5e1');
+    const cores = evento.curva_anual_indices.map(m => m.destaque ? '#0f766e' : '#cbd5e1');
 
     if (this.graficoCurvaAnualInstancia) {
       this.graficoCurvaAnualInstancia.destroy();
@@ -115,10 +112,10 @@ window.Sazonalidade = {
       data: {
         labels,
         datasets: [{
-          label: 'Índice Relativo de Demanda Sazonal (Base = 1.0)',
+          label: 'Índice de Demanda Sazonal (Base = 1.0)',
           data: valores,
           backgroundColor: cores,
-          borderRadius: 6
+          borderRadius: 3
         }]
       },
       options: {
